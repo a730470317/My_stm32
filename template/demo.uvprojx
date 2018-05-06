@@ -53,7 +53,7 @@
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
-          <DebugInformation>0</DebugInformation>
+          <DebugInformation>1</DebugInformation>
           <BrowseInformation>0</BrowseInformation>
           <ListingPath>.\Listings\</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
@@ -320,14 +320,14 @@
             <PlainCh>0</PlainCh>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
-            <wLevel>2</wLevel>
+            <wLevel>1</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
-            <uGnu>1</uGnu>
+            <uGnu>0</uGnu>
             <useXO>0</useXO>
-            <v6Lang>1</v6Lang>
-            <v6LangP>1</v6LangP>
+            <v6Lang>3</v6Lang>
+            <v6LangP>3</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
             <v6Lto>0</v6Lto>
@@ -335,9 +335,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define></Define>
+              <Define>USE_HAL_DRIVER,STM32H743xx</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Inc;.\Driver\STM32H7xx_HAL_Driver\Inc;.\Drivers\CMSIS\Include;.\STM32H743ZI_Nucleo;.\Driver\CMSIS\Include</IncludePath>
+              <IncludePath>.\Inc;.\Driver\STM32H7xx_HAL_Driver\Inc;.\Drivers\CMSIS\Include;.\STM32H743ZI_Nucleo;.\Driver\CMSIS\Include;.\Src</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -388,6 +388,11 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Src\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>board_io.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\board_io.c</FilePath>
             </File>
             <File>
               <FileName>stm32h7xx_hal_msp.c</FileName>
@@ -808,6 +813,76 @@
               <FileName>stm32h7xx_ll_usb.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Driver\STM32H7xx_HAL_Driver\Src\stm32h7xx_ll_usb.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>common</GroupName>
+          <Files>
+            <File>
+              <FileName>numeric_alg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Src\common\numeric_alg.h</FilePath>
+            </File>
+            <File>
+              <FileName>pid_controller.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\common\pid_controller.c</FilePath>
+            </File>
+            <File>
+              <FileName>pid_controller.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Src\common\pid_controller.h</FilePath>
+            </File>
+            <File>
+              <FileName>serial_protocal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\common\serial_protocal.c</FilePath>
+            </File>
+            <File>
+              <FileName>serial_protocal.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Src\common\serial_protocal.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>my_drivers</GroupName>
+          <Files>
+            <File>
+              <FileName>bmp.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Src\oled\bmp.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\oled\oled.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Src\oled\oled.h</FilePath>
+            </File>
+            <File>
+              <FileName>oledfont.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Src\oled\oledfont.h</FilePath>
+            </File>
+            <File>
+              <FileName>sys.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Src\oled\sys.h</FilePath>
+            </File>
+            <File>
+              <FileName>adc_encoder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\adc_encoder\adc_encoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc_encoder.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Src\adc_encoder\adc_encoder.h</FilePath>
             </File>
           </Files>
         </Group>

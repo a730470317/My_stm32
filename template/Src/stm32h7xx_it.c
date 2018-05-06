@@ -41,6 +41,9 @@
 #include "stm32h7xx_it.h"
 #include "main.h"
 
+#include "board_io.h"
+#include "common/serial_protocal.h"
+#include "common/pid_controller.h"
 /** @addtogroup STM32H7xx_HAL_Examples
   * @{
   */
@@ -49,16 +52,30 @@
   * @{
   */
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Private functions ---------------------------------------------------------*/
+//#define TEST_REC
+extern char g_usart1_tx_buffer[1024];
+extern char g_usart1_rx_buffer[1024];
+extern int g_usart1_rx_size;
+extern TIM_HandleTypeDef htim8;
+extern PID_controller pid_motor_0;
+extern ADC_HandleTypeDef             AdcHandle;
+int g_usart1_rx_head_bias = 0;
+extern float g_adc_1_val;
+char g_usart1_rec_char;
 
-/******************************************************************************/
-/*            Cortex-M7 Processor Exceptions Handlers                         */
-/******************************************************************************/
+extern char g_printf_char[4][16];
+
+void on_get_packet(char* packet_data, int packet_id, int packet_size);
+void refresh_motor_IO(PID_controller * pid);
+
+extern DMA_HandleTypeDef hdma_adc1;
+extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim7;
+extern TIM_HandleTypeDef htim15;
+extern UART_HandleTypeDef huart1;
+
+
+
 
 /**
   * @brief   This function handles NMI exception.
@@ -139,50 +156,188 @@ void DebugMon_Handler(void)
 {
 }
 
-/**
-  * @brief  This function handles PendSVC exception.
-  * @param  None
-  * @retval None
-  */
 void PendSV_Handler(void)
 {
 }
 
-/**
-  * @brief  This function handles SysTick Handler.
-  * @param  None
-  * @retval None
-  */
 void SysTick_Handler(void)
 {
   HAL_IncTick();
 	
 }
-  
 
-/******************************************************************************/
-/*                 STM32H7xx Peripherals Interrupt Handlers                   */
-/*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
-/*  available peripheral interrupt handler's name please refer to the startup */
-/*  file (startup_stm32h7xx.s).                                               */
-/******************************************************************************/
 
 /**
-  * @brief  This function handles PPP interrupt request.
-  * @param  None
-  * @retval None
-  */
-/*void PPP_IRQHandler(void)
+* @brief This function handles TIM2 global interrupt.
+*/
+void TIM2_IRQHandler(void)
 {
-}*/
+  /* USER CODE BEGIN TIM2_IRQn 0 */
+  static int nbtime = 1;
+  int t_start = HAL_GetTick();
+  static char str_buffer[1024];
+  int send_idx = 0;
+  /* USER CODE END TIM2_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim2);
+  /* USER CODE BEGIN TIM2_IRQn 1 */
+  BLUE_LED_ON;
+  if (1)
+  {
+#ifdef TEST_REC
+    while (send_idx < g_usart1_rx_head_bias)
+    {
+      HAL_UART_Transmit(&huart1, (uint8_t *)&g_usart1_rx_buffer[send_idx], 1, 1);
+      send_idx++;
+    }
+    g_usart1_rx_head_bias = 0;
+#endif		
+    //printf("\r\nSTM32CubeMX rocks %d times \r\n", ++nbtime);
+    //printf("Encoder cnt = %d \r\n", (uint32_t)(__HAL_TIM_GET_COUNTER(&htim8)));
+    printf("Get data cost time %f\r\n", HAL_GetTick() - t_start);
+    printf("Adc interrupt, val2 = %f\r\n", g_adc_1_val);
+  }
+  else
+  {
 
+    //sprintf(str_buffer, "STM32CubeMX rocks %d times \r\n", ++nbtime);
+    //HAL_UART_Transmit(&huart1, str_buffer, strlen(str_buffer), 1000);
+    //sprintf(str_buffer, "Encoder cnt = %d \r\n", (uint32_t)(__HAL_TIM_GET_COUNTER(&htim8)));
+    //HAL_UART_Transmit(&huart1, str_buffer, strlen(str_buffer), 1000);
+  }
+  BLUE_LED_OFF;
+  //HAL_UART_Transmit(&huart1)
+  /* USER CODE END TIM2_IRQn 1 */
+}
 
 /**
-  * @}
-  */ 
+* @brief This function handles USART1 global interrupt.
+*/
+void USART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART1_IRQn 0 */
+  BLUE_LED_ON;
+  static int current_index = 0;
+  g_usart1_rec_char = (uint16_t)(USART1->RDR & (uint16_t)0x01FF);
+  char packet_data[100];
+  int packet_size = 0;
+  int packet_id = 0;
+#ifdef TEST_REC
+  g_usart1_rx_buffer[g_usart1_rx_head_bias] = g_usart1_rec_char;
+  g_usart1_rx_head_bias++;
+  if (g_usart1_rx_head_bias > USART_RX_SIZE - 1)
+    g_usart1_rx_head_bias = USART_RX_SIZE - 1;
+#endif
+  if (onRec(g_usart1_rec_char, g_usart1_rx_buffer, &current_index, &packet_id, &packet_size, packet_data))
+  {
+    current_index = 0;
+    on_get_packet(packet_data, packet_id, packet_size);
+  }
+  if (current_index >= USART_RX_SIZE)
+  {
+    current_index = 0;
+  }
+  //return;
+  /* USER CODE END USART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
+  __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+  BLUE_LED_OFF;
+  /* USER CODE END USART1_IRQn 1 */
+}
 
 /**
-  * @}
+* @brief This function handles TIM7 global interrupt.
+*/
+void TIM7_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM7_IRQn 0 */
+  GREEN_LED_ON
+    /* USER CODE END TIM7_IRQn 0 */
+    HAL_TIM_IRQHandler(&htim7);
+  /* USER CODE BEGIN TIM7_IRQn 1 */
+  /*
+
+  g_adc_1_val = ((float)HAL_ADC_GetValue(&hadc1)) * 3.3 / 0xffff;
   */
+  sprintf(g_printf_char[0], "Adc= %.2f", g_adc_1_val);
+  refresh_motor_IO(&pid_motor_0);
+  sprintf(g_printf_char[1], "pos= %d", pid_motor_0.m_current_pos);
+  GREEN_LED_OFF
+    /* USER CODE END TIM7_IRQn 1 */
+}
+
+/**
+* @brief This function handles DMAMUX1 overrun interrupt.
+*/
+void DMAMUX1_OVR_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMAMUX1_OVR_IRQn 0 */
+
+  /* USER CODE END DMAMUX1_OVR_IRQn 0 */
+
+  /* USER CODE BEGIN DMAMUX1_OVR_IRQn 1 */
+
+  /* USER CODE END DMAMUX1_OVR_IRQn 1 */
+}
+
+/**
+* @brief This function handles TIM15 global interrupt.
+*/
+void TIM15_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM15_IRQn 0 */
+
+  /* USER CODE END TIM15_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim15);
+  /* USER CODE BEGIN TIM15_IRQn 1 */
+
+  /* USER CODE END TIM15_IRQn 1 */
+}
+
+/* USER CODE BEGIN 1 */
+void on_get_packet(char* packet_data, int packet_id, int packet_size)
+{
+  int index;
+  short temp_data;
+  int i = 0;
+  printf("Get packet, id = %d\n", packet_id);
+  if (packet_id == 0) //For testing
+  {
+    printf("data = %d\n", packet_data[0]);
+  }
+}
+
+
+//Refreshe motor's state and output
+void refresh_motor_IO(PID_controller * pid)
+{
+  //pid->m_current_pos += (long)(*pid->m_timer_cnt - ENCODE_DEFAULT_BIAS)*360.0/pid->m_paulse_per_cir;
+  //*(pid->m_timer_cnt) = ENCODE_DEFAULT_BIAS;
+  pid->m_current_pos = (long)(*pid->m_timer_cnt - ENCODE_DEFAULT_BIAS)*360.0 / pid->m_paulse_per_cir;
+  //if (enable_PID_control && 5 == index)
+  if (pid->m_enable_PID_control)
+  {
+    pid_compute(pid);
+  }
+  if (pid->m_motor_enable == 0)
+  {
+    pid->m_output = 0;
+  }
+  if (pid->m_output > 0)
+  {
+    pid->m_pwm_output_timer->CCR1 = abs(pid->m_output);
+    pid->m_pwm_output_timer->CCR2 = 0;
+  }
+  else
+  {
+    pid->m_pwm_output_timer->CCR2 = abs(pid->m_output);
+    pid->m_pwm_output_timer->CCR1 = 0;
+  }
+  //*(pid->m_pwm_output) = (long)fabs((pid->m_output));
+}
+
+/* USER CODE END 1 */
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
