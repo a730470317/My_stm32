@@ -103,7 +103,10 @@ int pid_compute(PID_controller* pid)
 
   //pid->m_output = alg_limit(pid->m_output, pid->m_ctrl_max_pwm, -pid->m_ctrl_max_pwm);
   pid->m_output = alg_limit_abs(pid->m_output, pid->m_ctrl_max_pwm);
-
+	if( abs(pid->m_pos_err_vec[0]) <= 2)
+		pid->m_output *= 0.5;
+	else if(( abs(pid->m_pos_err_vec[0]) <= 4))
+		pid->m_output = alg_limit_abs(pid->m_output, (pid->m_ctrl_max_pwm*0.5) );
 	out_put = fabs((int)(pid->m_output));
 	return out_put;
 }

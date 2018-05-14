@@ -24,4 +24,13 @@
 
 #define RED_LED_ON  HAL_GPIO_WritePin(GPIOC,GPIO_PIN_14,GPIO_PIN_SET);
 #define RED_LED_OFF HAL_GPIO_WritePin(GPIOC,GPIO_PIN_14,GPIO_PIN_RESET);
+
+
+// IO definition
+// Adc encoder:     PA6
+// Opti_Eletronic:  PC6 PC7
+// PWM_output:      PE5 PE6
+// USART:           PB15(RX) PB16(TX)
+// OLED             See oled.h
+
 #endif 

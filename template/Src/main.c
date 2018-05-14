@@ -76,8 +76,8 @@ static void MX_GPIO_Init(void);
 void MX_TIM2_Init(void);
 void MX_TIM3_Init(void);
 void MX_USART1_UART_Init(void);
-static void MX_TIM15_Init(void);
-static void MX_TIM8_Init(void);
+static void PWM_TIM15_Init(void);
+static void Encoder_TIM8_Init(void);
 static void MX_TIM7_Init(void);
 static void MX_ADC1_Init(void);
 
@@ -99,8 +99,8 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_USART1_UART_Init();
-  MX_TIM15_Init();
-  MX_TIM8_Init();
+  PWM_TIM15_Init();
+  Encoder_TIM8_Init();
   MX_TIM7_Init();
 	
 	OLED_Init();
@@ -114,24 +114,42 @@ int main(void)
   HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_2);
   HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_ALL);
-	
-  
-	HAL_Delay(1000);
+  pid_ctrl_init();
+  __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+  pid_motor_0.m_motor_enable =1;
+	HAL_Delay(100);
   /* Infinite loop */
   while (1)
   {
     OLED_Clear();
 		u8 t;
-    long t_start = HAL_GetTick();
+    //long t_start = HAL_GetTick();
 		
 		//OLED_Clear();
 		for(int i=0;i<4;i++)
 		{
 			OLED_ShowString(0, 2*i, g_printf_char[i]);
 		}
-		continue;
-		
+		 HAL_Delay(20);
+		//continue;
   }
+}
+
+void pid_ctrl_init()
+{
+  //Init all pid paramater input and output.
+  init_pid_parameter(&pid_motor_0, 0.04, 0, 0, //pos pid
+    10, 0, 0, //spd pid
+    10);
+  //pid_motor_0.m_pwm_output = &(TIM15->CCR1);
+  pid_motor_0.m_timer_cnt = &(TIM8->CNT);
+  *pid_motor_0.m_timer_cnt = ENCODE_DEFAULT_BIAS;
+  pid_motor_0.m_current_pos = 0;
+  pid_motor_0.m_paulse_per_cir = 260;
+  pid_motor_0.m_enable_PID_control = 1;
+  pid_motor_0.m_motor_enable = 0;
+  pid_motor_0.m_pwm_output_timer = TIM15;
+  motor_array[0] = &pid_motor_0;
 }
 
 static void SystemClock_Config(void)
@@ -327,9 +345,9 @@ static void MX_TIM7_Init(void)
 }
 
 /* TIM8 init function */
-static void MX_TIM8_Init(void)
+static void Encoder_TIM8_Init(void)
 {
-
+  //PC6 PC7 is tim8 encoder input
   TIM_Encoder_InitTypeDef sConfig;
   TIM_MasterConfigTypeDef sMasterConfig;
 
@@ -365,16 +383,16 @@ static void MX_TIM8_Init(void)
 }
 
 /* TIM15 init function */
-static void MX_TIM15_Init(void)
+static void PWM_TIM15_Init(void)
 {
-
+  //PE5 PE6 is set as pwm_1,pwm_2 output
   TIM_ClockConfigTypeDef sClockSourceConfig;
   TIM_MasterConfigTypeDef sMasterConfig;
   TIM_OC_InitTypeDef sConfigOC;
   TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig;
 
   htim15.Instance = TIM15;
-  htim15.Init.Prescaler = 19;
+  htim15.Init.Prescaler = 199;
   htim15.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim15.Init.Period = 999;
   htim15.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

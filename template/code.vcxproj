@@ -146,7 +146,11 @@
     <ClCompile Include="Driver\STM32H7xx_HAL_Driver\Src\stm32h7xx_ll_sdmmc.c" />
     <ClCompile Include="Driver\STM32H7xx_HAL_Driver\Src\stm32h7xx_ll_usb.c" />
     <ClCompile Include="Src\adc_encoder\adc_encoder.c" />
+    <ClCompile Include="Src\common\pid_controller.c" />
+    <ClCompile Include="Src\common\serial_protocal.c" />
     <ClCompile Include="Src\main.c" />
+    <ClCompile Include="Src\oled\oled.c" />
+    <ClCompile Include="Src\oled\sys.c" />
     <ClCompile Include="Src\stm32h7xx_hal_msp.c" />
     <ClCompile Include="Src\stm32h7xx_it.c" />
     <ClCompile Include="Src\system_stm32h7xx.c" />
@@ -260,6 +264,13 @@
     <ClInclude Include="Inc\stm32h7xx_hal_conf.h" />
     <ClInclude Include="Inc\stm32h7xx_it.h" />
     <ClInclude Include="Src\adc_encoder\adc_encoder.h" />
+    <ClInclude Include="Src\common\numeric_alg.h" />
+    <ClInclude Include="Src\common\pid_controller.h" />
+    <ClInclude Include="Src\common\serial_protocal.h" />
+    <ClInclude Include="Src\oled\bmp.h" />
+    <ClInclude Include="Src\oled\oled.h" />
+    <ClInclude Include="Src\oled\oledfont.h" />
+    <ClInclude Include="Src\oled\sys.h" />
     <ClInclude Include="STM32H743ZI_Nucleo\stm32h7xx_nucleo_144.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

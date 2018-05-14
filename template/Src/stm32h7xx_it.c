@@ -40,7 +40,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_it.h"
 #include "main.h"
-
+#include "adc_encoder/adc_encoder.h"
 #include "board_io.h"
 #include "common/serial_protocal.h"
 #include "common/pid_controller.h"
@@ -58,14 +58,20 @@ extern char g_usart1_rx_buffer[1024];
 extern int g_usart1_rx_size;
 extern TIM_HandleTypeDef htim8;
 extern PID_controller pid_motor_0;
+extern PID_controller pid_motor_1;
 extern ADC_HandleTypeDef             AdcHandle;
 int g_usart1_rx_head_bias = 0;
+
 extern float g_adc_1_val;
+float g_adc_bias = 0;
+int g_bias_count = 0;
+extern ALIGN_32BYTES(uint16_t   g_adc_val_raw[]);
 char g_usart1_rec_char;
 
 extern char g_printf_char[4][16];
 
 void on_get_packet(char* packet_data, int packet_id, int packet_size);
+void refresh_bai_IO(float bai);
 void refresh_motor_IO(PID_controller * pid);
 
 extern DMA_HandleTypeDef hdma_adc1;
@@ -252,46 +258,34 @@ void TIM7_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM7_IRQn 0 */
   GREEN_LED_ON
-    /* USER CODE END TIM7_IRQn 0 */
-    HAL_TIM_IRQHandler(&htim7);
-  /* USER CODE BEGIN TIM7_IRQn 1 */
-  /*
-
-  g_adc_1_val = ((float)HAL_ADC_GetValue(&hadc1)) * 3.3 / 0xffff;
-  */
-  sprintf(g_printf_char[0], "Adc= %.2f", g_adc_1_val);
+  HAL_TIM_IRQHandler(&htim7);
+  g_adc_1_val = g_adc_val_raw[0] * 3.3f / 0xffff;
+	int bias_sample_time  = 2000;
+	if(g_bias_count < bias_sample_time)
+	{
+		g_adc_bias+=g_adc_1_val;
+		g_bias_count++;
+		GREEN_LED_OFF;
+		return;
+	}
+	else if (g_bias_count == bias_sample_time)
+	{
+		g_bias_count++;
+		g_adc_bias /= (float)bias_sample_time;
+	}
+	float angle = g_adc_1_val*360.0/3.3;
+	angle-=(g_adc_bias*360.0/3.3);
+  sprintf(g_printf_char[0], "a=%.2fV , e=%d", g_adc_1_val, (int)angle);
+  //refresh_bai_IO(angle);
   refresh_motor_IO(&pid_motor_0);
   sprintf(g_printf_char[1], "pos= %d", pid_motor_0.m_current_pos);
   GREEN_LED_OFF
     /* USER CODE END TIM7_IRQn 1 */
 }
 
-/**
-* @brief This function handles DMAMUX1 overrun interrupt.
-*/
-void DMAMUX1_OVR_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMAMUX1_OVR_IRQn 0 */
-
-  /* USER CODE END DMAMUX1_OVR_IRQn 0 */
-
-  /* USER CODE BEGIN DMAMUX1_OVR_IRQn 1 */
-
-  /* USER CODE END DMAMUX1_OVR_IRQn 1 */
-}
-
-/**
-* @brief This function handles TIM15 global interrupt.
-*/
 void TIM15_IRQHandler(void)
 {
-  /* USER CODE BEGIN TIM15_IRQn 0 */
-
-  /* USER CODE END TIM15_IRQn 0 */
   HAL_TIM_IRQHandler(&htim15);
-  /* USER CODE BEGIN TIM15_IRQn 1 */
-
-  /* USER CODE END TIM15_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
@@ -336,8 +330,20 @@ void refresh_motor_IO(PID_controller * pid)
   //*(pid->m_pwm_output) = (long)fabs((pid->m_output));
 }
 
-/* USER CODE END 1 */
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-
+void refresh_bai_IO(float bai)
+{
+  long motor_pos = pid_motor_0.m_current_pos;
+	if(abs(motor_pos) > 1800)
+	{
+		pid_motor_0.m_motor_enable = 0;
+	}
+	else
+	{
+			pid_motor_0.m_motor_enable = 1;
+	}
+  float x_abs = 1000*sin(bai / 57.3);
+  sprintf(g_printf_char[2], "%.2f,", x_abs);
+	pid_motor_0.m_target_pos = (motor_pos - x_abs);
+}
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

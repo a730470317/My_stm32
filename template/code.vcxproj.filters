@@ -10,6 +10,12 @@
     <Filter Include="driver">
       <UniqueIdentifier>{319adc49-559d-4f2a-ae91-55d0252b64e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\drivers">
+      <UniqueIdentifier>{9b22006d-36d1-4d0f-89d0-97227983937b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\common">
+      <UniqueIdentifier>{a97b695e-959e-4859-b735-e25540eca7b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\main.c">
@@ -265,7 +271,19 @@
       <Filter>driver</Filter>
     </ClCompile>
     <ClCompile Include="Src\adc_encoder\adc_encoder.c">
-      <Filter>src</Filter>
+      <Filter>src\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\oled\oled.c">
+      <Filter>src\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\oled\sys.c">
+      <Filter>src\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\common\pid_controller.c">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\common\serial_protocal.c">
+      <Filter>src\common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -591,7 +609,28 @@
       <Filter>driver</Filter>
     </ClInclude>
     <ClInclude Include="Src\adc_encoder\adc_encoder.h">
-      <Filter>src</Filter>
+      <Filter>src\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\oled\bmp.h">
+      <Filter>src\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\oled\oled.h">
+      <Filter>src\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\oled\oledfont.h">
+      <Filter>src\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\oled\sys.h">
+      <Filter>src\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\common\serial_protocal.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\common\pid_controller.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\common\numeric_alg.h">
+      <Filter>src\common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

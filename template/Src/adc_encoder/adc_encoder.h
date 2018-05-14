@@ -22,8 +22,12 @@
 #define ADCx_CHANNEL                    ADC_CHANNEL_3
 #define ADC_CONVERTED_DATA_BUFFER_SIZE   ((uint32_t)  32)   /* Size of array aADCxConvertedData[] */
 
-void DMA1_Stream1_IRQHandler(void);
 void adc_dma_init();
-//void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc);
-//void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
+
+void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc);
+void HAL_ADC_MspDeInit(ADC_HandleTypeDef *hadc);
+
+void DMA1_Stream1_IRQHandler(void);
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc);
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
 #endif
