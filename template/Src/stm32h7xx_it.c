@@ -69,7 +69,7 @@ extern ALIGN_32BYTES(uint16_t   g_adc_val_raw[]);
 char g_usart1_rec_char;
 
 extern char g_printf_char[4][16];
-
+int count_encoder =0 ;
 void on_get_packet(char* packet_data, int packet_id, int packet_size);
 void refresh_bai_IO(float bai);
 void refresh_motor_IO(PID_controller * pid);
@@ -287,6 +287,25 @@ void TIM15_IRQHandler(void)
 {
   HAL_TIM_IRQHandler(&htim15);
 }
+
+void EXTI9_5_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+
+  /* USER CODE END EXTI9_5_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
+  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+	if(HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_4)==1)
+	{
+		count_encoder++;
+	}
+	else
+	{
+		count_encoder--;
+	}
+  /* USER CODE END EXTI9_5_IRQn 1 */
+}
+
 
 /* USER CODE BEGIN 1 */
 void on_get_packet(char* packet_data, int packet_id, int packet_size)

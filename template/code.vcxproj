@@ -146,6 +146,7 @@
     <ClCompile Include="Driver\STM32H7xx_HAL_Driver\Src\stm32h7xx_ll_sdmmc.c" />
     <ClCompile Include="Driver\STM32H7xx_HAL_Driver\Src\stm32h7xx_ll_usb.c" />
     <ClCompile Include="Src\adc_encoder\adc_encoder.c" />
+    <ClCompile Include="Src\board_io.c" />
     <ClCompile Include="Src\common\pid_controller.c" />
     <ClCompile Include="Src\common\serial_protocal.c" />
     <ClCompile Include="Src\main.c" />
@@ -264,6 +265,7 @@
     <ClInclude Include="Inc\stm32h7xx_hal_conf.h" />
     <ClInclude Include="Inc\stm32h7xx_it.h" />
     <ClInclude Include="Src\adc_encoder\adc_encoder.h" />
+    <ClInclude Include="Src\board_io.h" />
     <ClInclude Include="Src\common\numeric_alg.h" />
     <ClInclude Include="Src\common\pid_controller.h" />
     <ClInclude Include="Src\common\serial_protocal.h" />

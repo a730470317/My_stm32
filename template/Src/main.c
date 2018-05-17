@@ -67,7 +67,7 @@ __IO uint16_t uhADCxConvertedValue = 0;
 
 PID_controller pid_motor_0;
 PID_controller* motor_array[6];
-
+extern int count_encoder ;
 extern ALIGN_32BYTES(uint16_t   aADCxConvertedData[ADC_CONVERTED_DATA_BUFFER_SIZE]);
 
 void pid_ctrl_init();
@@ -86,6 +86,31 @@ static void Error_Handler(void);
 void  _Error_Handler(char *file, int line);
 static void CPU_CACHE_Enable(void);
 
+void exit_encoder_init()
+{
+  GPIO_InitTypeDef GPIO_InitStruct;
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+
+  /*Configure GPIO pin : PD4 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PD5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_5;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+}
+
 int main(void)
 {
   CPU_CACHE_Enable();
@@ -102,7 +127,7 @@ int main(void)
   PWM_TIM15_Init();
   Encoder_TIM8_Init();
   MX_TIM7_Init();
-	
+	exit_encoder_init();
 	OLED_Init();
   OLED_Clear();
 	OLED_ShowString(0,0,"test~");
@@ -113,14 +138,17 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim7);
   HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_2);
-  HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_ALL);
+  HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_1|TIM_CHANNEL_2);
   pid_ctrl_init();
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
-  pid_motor_0.m_motor_enable =1;
+  pid_motor_0.m_motor_enable =0;
 	HAL_Delay(100);
   /* Infinite loop */
   while (1)
   {
+		TIM15->CCR1 = 50;
+		TIM15->CCR2 = 0;
+		sprintf(g_printf_char[2], "pos= %.2f",count_encoder*360.0/10000 );
     OLED_Clear();
 		u8 t;
     //long t_start = HAL_GetTick();
@@ -145,7 +173,7 @@ void pid_ctrl_init()
   pid_motor_0.m_timer_cnt = &(TIM8->CNT);
   *pid_motor_0.m_timer_cnt = ENCODE_DEFAULT_BIAS;
   pid_motor_0.m_current_pos = 0;
-  pid_motor_0.m_paulse_per_cir = 260;
+  pid_motor_0.m_paulse_per_cir = 10000;
   pid_motor_0.m_enable_PID_control = 1;
   pid_motor_0.m_motor_enable = 0;
   pid_motor_0.m_pwm_output_timer = TIM15;
@@ -350,23 +378,30 @@ static void Encoder_TIM8_Init(void)
   //PC6 PC7 is tim8 encoder input
   TIM_Encoder_InitTypeDef sConfig;
   TIM_MasterConfigTypeDef sMasterConfig;
+  GPIO_InitTypeDef GPIO_InitStruct;
+  GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
 
   htim8.Instance = TIM8;
   htim8.Init.Prescaler = 0;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim8.Init.Period = 0xffff;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim8.Init.RepetitionCounter = 0x7fff;
+  htim8.Init.RepetitionCounter = 0;
   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI2;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
-  sConfig.IC1Filter = 0;
-  sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC1Filter = 1000;
+  sConfig.IC2Polarity = TIM_ICPOLARITY_FALLING;
   sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
-  sConfig.IC2Filter = 0;
+  sConfig.IC2Filter = 1000;
   if (HAL_TIM_Encoder_Init(&htim8, &sConfig) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -379,7 +414,7 @@ static void Encoder_TIM8_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-
+	TIM8->CNT = 0x7fff;
 }
 
 /* TIM15 init function */

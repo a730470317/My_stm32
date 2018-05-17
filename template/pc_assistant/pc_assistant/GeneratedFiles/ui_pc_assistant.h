@@ -39,7 +39,7 @@ public:
     {
         if (pc_assistantClass->objectName().isEmpty())
             pc_assistantClass->setObjectName(QStringLiteral("pc_assistantClass"));
-        pc_assistantClass->resize(804, 583);
+        pc_assistantClass->resize(1213, 1044);
         centralWidget = new QWidget(pc_assistantClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -67,6 +67,11 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(label_message->sizePolicy().hasHeightForWidth());
         label_message->setSizePolicy(sizePolicy);
+        QFont font;
+        font.setPointSize(15);
+        font.setBold(true);
+        font.setWeight(75);
+        label_message->setFont(font);
 
         gridLayout->addWidget(label_message, 0, 1, 1, 1);
 
@@ -78,7 +83,7 @@ public:
         sizePolicy1.setHeightForWidth(dial_circle->sizePolicy().hasHeightForWidth());
         dial_circle->setSizePolicy(sizePolicy1);
 
-        gridLayout->addWidget(dial_circle, 1, 1, 1, 1);
+        gridLayout->addWidget(dial_circle, 1, 1, 2, 1);
 
         pc_assistantClass->setCentralWidget(centralWidget);
 
