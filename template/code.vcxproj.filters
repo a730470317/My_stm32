@@ -283,7 +283,7 @@
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="Src\board_io.c" />
-    <ClCompile Include="Src\adc_encoder\motor_encoder.c">
+    <ClCompile Include="Src\motor_encoder\motor_encoder.c">
       <Filter>src\drivers</Filter>
     </ClCompile>
   </ItemGroup>
@@ -631,7 +631,7 @@
       <Filter>src\common</Filter>
     </ClInclude>
     <ClInclude Include="Src\board_io.h" />
-    <ClInclude Include="Src\adc_encoder\motor_encoder.h">
+    <ClInclude Include="Src\motor_encoder\motor_encoder.h">
       <Filter>src\drivers</Filter>
     </ClInclude>
   </ItemGroup>

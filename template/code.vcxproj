@@ -145,11 +145,11 @@
     <ClCompile Include="Driver\STM32H7xx_HAL_Driver\Src\stm32h7xx_ll_fmc.c" />
     <ClCompile Include="Driver\STM32H7xx_HAL_Driver\Src\stm32h7xx_ll_sdmmc.c" />
     <ClCompile Include="Driver\STM32H7xx_HAL_Driver\Src\stm32h7xx_ll_usb.c" />
-    <ClCompile Include="Src\adc_encoder\motor_encoder.c" />
     <ClCompile Include="Src\board_io.c" />
     <ClCompile Include="Src\common\pid_controller.c" />
     <ClCompile Include="Src\common\serial_protocal.c" />
     <ClCompile Include="Src\main.c" />
+    <ClCompile Include="Src\motor_encoder\motor_encoder.c" />
     <ClCompile Include="Src\oled\oled.c" />
     <ClCompile Include="Src\oled\sys.c" />
     <ClCompile Include="Src\stm32h7xx_hal_msp.c" />
@@ -264,11 +264,11 @@
     <ClInclude Include="Inc\main.h" />
     <ClInclude Include="Inc\stm32h7xx_hal_conf.h" />
     <ClInclude Include="Inc\stm32h7xx_it.h" />
-    <ClInclude Include="Src\adc_encoder\motor_encoder.h" />
     <ClInclude Include="Src\board_io.h" />
     <ClInclude Include="Src\common\numeric_alg.h" />
     <ClInclude Include="Src\common\pid_controller.h" />
     <ClInclude Include="Src\common\serial_protocal.h" />
+    <ClInclude Include="Src\motor_encoder\motor_encoder.h" />
     <ClInclude Include="Src\oled\bmp.h" />
     <ClInclude Include="Src\oled\oled.h" />
     <ClInclude Include="Src\oled\oledfont.h" />
