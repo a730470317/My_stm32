@@ -32,4 +32,6 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef *hadc);
 void DMA1_Stream1_IRQHandler(void);
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc);
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
+
+void Encoder_TIM8_Init(void); //Internal encoder.
 #endif

@@ -103,8 +103,8 @@ void *pc_assistant::qt_metacast(const char *_clname)
     if (!_clname) return Q_NULLPTR;
     if (!strcmp(_clname, qt_meta_stringdata_pc_assistant.stringdata0))
         return static_cast<void*>(const_cast< pc_assistant*>(this));
-    if (!strcmp(_clname, "common_service"))
-        return static_cast< serial_service*>(const_cast< pc_assistant*>(this));
+    if (!strcmp(_clname, "Serial_service"))
+        return static_cast< Serial_service*>(const_cast< pc_assistant*>(this));
     return QMainWindow::qt_metacast(_clname);
 }
 

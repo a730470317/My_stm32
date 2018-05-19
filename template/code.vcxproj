@@ -46,6 +46,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>STM32H743xx;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -155,6 +156,7 @@
     <ClCompile Include="Src\stm32h7xx_hal_msp.c" />
     <ClCompile Include="Src\stm32h7xx_it.c" />
     <ClCompile Include="Src\system_stm32h7xx.c" />
+    <ClCompile Include="Src\timer\timer.c" />
     <ClCompile Include="STM32H743ZI_Nucleo\stm32h7xx_nucleo_144.c" />
   </ItemGroup>
   <ItemGroup>
@@ -273,6 +275,7 @@
     <ClInclude Include="Src\oled\oled.h" />
     <ClInclude Include="Src\oled\oledfont.h" />
     <ClInclude Include="Src\oled\sys.h" />
+    <ClInclude Include="Src\timer\timer.h" />
     <ClInclude Include="STM32H743ZI_Nucleo\stm32h7xx_nucleo_144.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

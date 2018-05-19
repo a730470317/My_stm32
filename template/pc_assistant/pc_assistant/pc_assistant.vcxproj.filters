@@ -69,5 +69,8 @@
     <ClInclude Include="import_lib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="serial_service.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

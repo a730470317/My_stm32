@@ -201,6 +201,7 @@
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_pc_assistant.h" />
     <ClInclude Include="import_lib.h" />
+    <ClInclude Include="serial_service.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="pc_assistant.qrc">

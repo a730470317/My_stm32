@@ -30,7 +30,12 @@
 // Adc encoder:     PA6
 // Opti_Eletronic:  PC6 PC7
 // PWM_output:      PE5 PE6
-// USART:           PB15(RX) PB16(TX)
-// OLED             See oled.h
-
-#endif 
+// USART:           PB14(RX) PB15(TX)
+/* OLED==================
+      D0   接PG10（SCL）
+      D1   接PG12（SDA）
+      RES  接PG13
+      DC   接PG11
+      CS   接PD9   
+*/
+#endif

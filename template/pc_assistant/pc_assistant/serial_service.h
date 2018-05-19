@@ -5,6 +5,9 @@
 #include <fstream>
 #include <QSerialPort>
 
+#include <thread>
+#include <functional>
+
 #define SERIAL_SERVICE_VERSION              "Serial_service_v0.1"
 #define SERIAL_SERVICE_DESC                 "The beta version."
 using namespace std;
@@ -26,9 +29,10 @@ class Serial_service
 {
 
 public:
-    QSerialPort m_serial;
-    std::string m_serial_name;
-    Serial_config m_serial_config;
+    QSerialPort     m_serial;
+    std::string     m_serial_name;
+    Serial_config   m_serial_config;
+    std::thread     m_thread;
 public:
 
     void open_serial()
@@ -61,6 +65,9 @@ public:
         {
             cout << "Open serial fail, please check!!!" << endl;;
         }
+
+        
+
     }
 
     void print_serial_service_version()

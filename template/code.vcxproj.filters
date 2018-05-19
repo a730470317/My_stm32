@@ -282,9 +282,14 @@
     <ClCompile Include="Src\common\serial_protocal.c">
       <Filter>src\common</Filter>
     </ClCompile>
-    <ClCompile Include="Src\board_io.c" />
     <ClCompile Include="Src\motor_encoder\motor_encoder.c">
       <Filter>src\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\board_io.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\timer\timer.c">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -630,9 +635,14 @@
     <ClInclude Include="Src\common\numeric_alg.h">
       <Filter>src\common</Filter>
     </ClInclude>
-    <ClInclude Include="Src\board_io.h" />
     <ClInclude Include="Src\motor_encoder\motor_encoder.h">
       <Filter>src\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\board_io.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\timer\timer.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

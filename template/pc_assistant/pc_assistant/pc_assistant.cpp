@@ -6,7 +6,6 @@ pc_assistant::pc_assistant(QWidget *parent)
     ui.setupUi(this);
     cout << "Hello" << endl;
     init_signal_and_slot();
-    test_fun();
     //m_packet_rec_timer.start(2);
     //m_serial_rec_timer.start(2);
 
