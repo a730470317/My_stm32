@@ -40,7 +40,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_it.h"
 #include "main.h"
-#include "adc_encoder/adc_encoder.h"
+#include "motor_encoder/motor_encoder.h"
 #include "board_io.h"
 #include "common/serial_protocal.h"
 #include "common/pid_controller.h"

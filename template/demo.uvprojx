@@ -875,14 +875,14 @@
               <FilePath>.\Src\oled\sys.h</FilePath>
             </File>
             <File>
-              <FileName>adc_encoder.c</FileName>
+              <FileName>motor_encoder.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Src\adc_encoder\adc_encoder.c</FilePath>
+              <FilePath>.\Src\motor_encoder\motor_encoder.c</FilePath>
             </File>
             <File>
-              <FileName>adc_encoder.h</FileName>
+              <FileName>motor_encoder.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\Src\adc_encoder\adc_encoder.h</FilePath>
+              <FilePath>.\Src\motor_encoder\motor_encoder.h</FilePath>
             </File>
           </Files>
         </Group>

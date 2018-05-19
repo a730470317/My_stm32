@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_pc_assistant_t {
-    QByteArrayData data[3];
-    char stringdata0[34];
+    QByteArrayData data[6];
+    char stringdata0[101];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -31,10 +31,15 @@ static const qt_meta_stringdata_pc_assistant_t qt_meta_stringdata_pc_assistant =
     {
 QT_MOC_LITERAL(0, 0, 12), // "pc_assistant"
 QT_MOC_LITERAL(1, 13, 19), // "slot_on_click_start"
-QT_MOC_LITERAL(2, 33, 0) // ""
+QT_MOC_LITERAL(2, 33, 0), // ""
+QT_MOC_LITERAL(3, 34, 22), // "slot_on_serial_timeout"
+QT_MOC_LITERAL(4, 57, 22), // "slot_on_packet_timeout"
+QT_MOC_LITERAL(5, 80, 20) // "init_signal_and_slot"
 
     },
-    "pc_assistant\0slot_on_click_start\0"
+    "pc_assistant\0slot_on_click_start\0\0"
+    "slot_on_serial_timeout\0slot_on_packet_timeout\0"
+    "init_signal_and_slot"
 };
 #undef QT_MOC_LITERAL
 
@@ -44,7 +49,7 @@ static const uint qt_meta_data_pc_assistant[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       1,   14, // methods
+       4,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -52,9 +57,15 @@ static const uint qt_meta_data_pc_assistant[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   19,    2, 0x0a /* Public */,
+       1,    0,   34,    2, 0x0a /* Public */,
+       3,    0,   35,    2, 0x0a /* Public */,
+       4,    0,   36,    2, 0x0a /* Public */,
+       5,    0,   37,    2, 0x0a /* Public */,
 
  // slots: parameters
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
 
        0        // eod
@@ -67,6 +78,9 @@ void pc_assistant::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->slot_on_click_start(); break;
+        case 1: _t->slot_on_serial_timeout(); break;
+        case 2: _t->slot_on_packet_timeout(); break;
+        case 3: _t->init_signal_and_slot(); break;
         default: ;
         }
     }
@@ -89,6 +103,8 @@ void *pc_assistant::qt_metacast(const char *_clname)
     if (!_clname) return Q_NULLPTR;
     if (!strcmp(_clname, qt_meta_stringdata_pc_assistant.stringdata0))
         return static_cast<void*>(const_cast< pc_assistant*>(this));
+    if (!strcmp(_clname, "common_service"))
+        return static_cast< serial_service*>(const_cast< pc_assistant*>(this));
     return QMainWindow::qt_metacast(_clname);
 }
 
@@ -98,13 +114,13 @@ int pc_assistant::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 1)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 1;
+        _id -= 4;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 1)
+        if (_id < 4)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 1;
+        _id -= 4;
     }
     return _id;
 }

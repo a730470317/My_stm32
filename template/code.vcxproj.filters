@@ -270,9 +270,6 @@
     <ClCompile Include="STM32H743ZI_Nucleo\stm32h7xx_nucleo_144.c">
       <Filter>driver</Filter>
     </ClCompile>
-    <ClCompile Include="Src\adc_encoder\adc_encoder.c">
-      <Filter>src\drivers</Filter>
-    </ClCompile>
     <ClCompile Include="Src\oled\oled.c">
       <Filter>src\drivers</Filter>
     </ClCompile>
@@ -284,6 +281,10 @@
     </ClCompile>
     <ClCompile Include="Src\common\serial_protocal.c">
       <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\board_io.c" />
+    <ClCompile Include="Src\adc_encoder\motor_encoder.c">
+      <Filter>src\drivers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -608,9 +609,6 @@
     <ClInclude Include="STM32H743ZI_Nucleo\stm32h7xx_nucleo_144.h">
       <Filter>driver</Filter>
     </ClInclude>
-    <ClInclude Include="Src\adc_encoder\adc_encoder.h">
-      <Filter>src\drivers</Filter>
-    </ClInclude>
     <ClInclude Include="Src\oled\bmp.h">
       <Filter>src\drivers</Filter>
     </ClInclude>
@@ -631,6 +629,10 @@
     </ClInclude>
     <ClInclude Include="Src\common\numeric_alg.h">
       <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\board_io.h" />
+    <ClInclude Include="Src\adc_encoder\motor_encoder.h">
+      <Filter>src\drivers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

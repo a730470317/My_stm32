@@ -1,4 +1,4 @@
-#include "adc_encoder/adc_encoder.h"
+#include "motor_encoder/motor_encoder.h"
 
 #include "stm32h7xx_hal.h"
 
@@ -7,6 +7,31 @@ ADC_HandleTypeDef             AdcHandle;
 ADC_ChannelConfTypeDef        sConfig;
 
 ALIGN_32BYTES( uint16_t   g_adc_val_raw[ADC_CONVERTED_DATA_BUFFER_SIZE]);
+
+
+void exit_encoder_init()
+{
+    GPIO_InitTypeDef GPIO_InitStruct;
+    /* GPIO Ports Clock Enable */
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+    /*Configure GPIO pin : PD4 */
+    GPIO_InitStruct.Pin = GPIO_PIN_4;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+    /*Configure GPIO pin : PD5 */
+    GPIO_InitStruct.Pin = GPIO_PIN_5;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+    /* EXTI interrupt init*/
+    HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+}
+
 
 
 static void Error_Handler(void)

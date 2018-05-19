@@ -39,7 +39,7 @@ public:
     {
         if (pc_assistantClass->objectName().isEmpty())
             pc_assistantClass->setObjectName(QStringLiteral("pc_assistantClass"));
-        pc_assistantClass->resize(1213, 1044);
+        pc_assistantClass->resize(1213, 830);
         centralWidget = new QWidget(pc_assistantClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -48,6 +48,11 @@ public:
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         pushButton_start = new QPushButton(centralWidget);
         pushButton_start->setObjectName(QStringLiteral("pushButton_start"));
+        QFont font;
+        font.setPointSize(14);
+        font.setBold(true);
+        font.setWeight(75);
+        pushButton_start->setFont(font);
 
         gridLayout->addWidget(pushButton_start, 0, 2, 1, 1);
 
@@ -57,6 +62,7 @@ public:
 
         pushButton_exit = new QPushButton(centralWidget);
         pushButton_exit->setObjectName(QStringLiteral("pushButton_exit"));
+        pushButton_exit->setFont(font);
 
         gridLayout->addWidget(pushButton_exit, 2, 2, 1, 1);
 
@@ -67,11 +73,11 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(label_message->sizePolicy().hasHeightForWidth());
         label_message->setSizePolicy(sizePolicy);
-        QFont font;
-        font.setPointSize(15);
-        font.setBold(true);
-        font.setWeight(75);
-        label_message->setFont(font);
+        QFont font1;
+        font1.setPointSize(15);
+        font1.setBold(true);
+        font1.setWeight(75);
+        label_message->setFont(font1);
 
         gridLayout->addWidget(label_message, 0, 1, 1, 1);
 
@@ -95,7 +101,7 @@ public:
     void retranslateUi(QMainWindow *pc_assistantClass)
     {
         pc_assistantClass->setWindowTitle(QApplication::translate("pc_assistantClass", "pc_assistant", 0));
-        pushButton_start->setText(QApplication::translate("pc_assistantClass", "PushButton", 0));
+        pushButton_start->setText(QApplication::translate("pc_assistantClass", "Start", 0));
         pushButton_exit->setText(QApplication::translate("pc_assistantClass", "Exit", 0));
         label_message->setText(QApplication::translate("pc_assistantClass", "The is message", 0));
     } // retranslateUi

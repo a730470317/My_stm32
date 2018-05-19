@@ -1,5 +1,5 @@
-#ifndef __adc_encoder_h__
-#define __adc_encoder_h__
+#ifndef __MOTOR_ENCODER_H__
+#define __MOTOR_ENCODER_H__
 #include "stm32h7xx.h"
 #include "stm32h7xx_hal.h"
 #include "stm32h7xx_hal_def.h"
@@ -23,6 +23,8 @@
 #define ADC_CONVERTED_DATA_BUFFER_SIZE   ((uint32_t)  32)   /* Size of array aADCxConvertedData[] */
 
 void adc_dma_init();
+
+void exit_encoder_init();
 
 void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc);
 void HAL_ADC_MspDeInit(ADC_HandleTypeDef *hadc);
