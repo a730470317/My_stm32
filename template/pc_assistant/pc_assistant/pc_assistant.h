@@ -8,31 +8,12 @@
 #include <iostream>
 #include "QTime"
 #include "qtimer.h"
-#include "QSerialPort"
 #include <iostream>
-using namespace std;
-
-class serial_service
-{
-public:
-    void print_kernel_version()
-    {
-        cout << "===== " << __FUNCTION__ << " =====" << endl;
-        cout << "Build date is " << __DATE__ << "  " << __TIME__ << endl;
-
-    }
-    void test_fun()
-    {
-        cout << __FUNCTION__ << endl;
-    };
+#include <QSerialPort>
+#include <serial_service.h>
 
 
-
-    virtual void slot_on_serial_timeout() = 0;
-    virtual void slot_on_packet_timeout() = 0;
-};
-
-class pc_assistant : public QMainWindow, serial_service
+class pc_assistant : public QMainWindow, Serial_service
 {
     Q_OBJECT
 public:
@@ -41,8 +22,6 @@ public:
 
     pc_assistant(QWidget *parent = 0);
     ~pc_assistant();
-
-    QSerialPort m_serial;
 
     public slots:
     void slot_on_click_start();
