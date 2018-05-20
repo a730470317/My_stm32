@@ -644,5 +644,8 @@
     <ClInclude Include="Src\timer\timer.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="Src\communication_id.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

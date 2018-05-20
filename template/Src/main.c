@@ -58,11 +58,10 @@ int g_usart1_rx_size = 1;
 
 float g_adc_1_val;
 char  g_printf_char[4][16];
-__IO uint16_t uhADCxConvertedValue = 0;
 
 PID_controller pid_motor_0;
 PID_controller* motor_array[6];
-extern int count_encoder;
+extern int g_encoder_exti;
 extern ALIGN_32BYTES(uint16_t   aADCxConvertedData[ADC_CONVERTED_DATA_BUFFER_SIZE]);
 
 extern TIM_HandleTypeDef htim2;
@@ -119,7 +118,7 @@ int main(void)
     {
         TIM15->CCR1 = 50;
         TIM15->CCR2 = 0;
-        sprintf(g_printf_char[2], "pos= %.2f", count_encoder*360.0 / 10000);
+        sprintf(g_printf_char[2], "pos= %.2f", g_encoder_exti*360.0 / 10000);
         OLED_Clear();
         u8 t;
         //long t_start = HAL_GetTick();

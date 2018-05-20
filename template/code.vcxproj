@@ -270,6 +270,7 @@
     <ClInclude Include="Src\common\numeric_alg.h" />
     <ClInclude Include="Src\common\pid_controller.h" />
     <ClInclude Include="Src\common\serial_protocal.h" />
+    <ClInclude Include="Src\communication_id.h" />
     <ClInclude Include="Src\motor_encoder\motor_encoder.h" />
     <ClInclude Include="Src\oled\bmp.h" />
     <ClInclude Include="Src\oled\oled.h" />

@@ -1,49 +1,11 @@
-/**
-  ******************************************************************************
-  * @file    Templates/Src/stm32h7xx_it.c
-  * @author  MCD Application Team
-  * @version V1.2.0
-  * @date    29-December-2017
-  * @brief   Main Interrupt Service Routines.
-  *          This file provides template for all exceptions handler and
-  *          peripherals interrupt service routine.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
-  *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
-  ******************************************************************************
-  */
-
-/* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_it.h"
 #include "main.h"
+#include <string.h>
 #include "motor_encoder/motor_encoder.h"
 #include "board_io.h"
 #include "common/serial_protocal.h"
 #include "common/pid_controller.h"
+#include "communication_id.h"
 /** @addtogroup STM32H7xx_HAL_Examples
   * @{
   */
@@ -60,6 +22,7 @@ extern TIM_HandleTypeDef htim8;
 extern PID_controller pid_motor_0;
 extern PID_controller pid_motor_1;
 extern ADC_HandleTypeDef             AdcHandle;
+
 int g_usart1_rx_head_bias = 0;
 
 extern float g_adc_1_val;
@@ -69,7 +32,9 @@ extern ALIGN_32BYTES(uint16_t   g_adc_val_raw[]);
 char g_usart1_rec_char;
 
 extern char g_printf_char[4][16];
-int count_encoder = 0;
+
+int g_encoder_exti = 0;
+int g_pendulum_angle = 0;
 void on_get_packet(char* packet_data, int packet_id, int packet_size);
 void refresh_bai_IO(float bai);
 void refresh_motor_IO(PID_controller * pid);
@@ -178,8 +143,10 @@ void TIM2_IRQHandler(void)
     /* USER CODE BEGIN TIM2_IRQn 0 */
     static int nbtime = 1;
     int t_start = HAL_GetTick();
-    static char str_buffer[1024];
+    static char str_buffer[100];
+    static int sizeof_float = sizeof(float);
     int send_idx = 0;
+    int packet_size = 0;
     /* USER CODE END TIM2_IRQn 0 */
     HAL_TIM_IRQHandler(&htim2);
     /* USER CODE BEGIN TIM2_IRQn 1 */
@@ -193,7 +160,12 @@ void TIM2_IRQHandler(void)
             send_idx++;
         }
         g_usart1_rx_head_bias = 0;
-#endif		
+#endif
+				float temp_angle = pid_motor_0.m_current_pos;
+        memcpy(str_buffer,(char*)&temp_angle,  sizeof_float);
+        memcpy(str_buffer + sizeof_float, (char*)&g_adc_1_val, sizeof_float);
+        make_packet(str_buffer, g_usart1_tx_buffer, STM32_STATE_REPORT, sizeof_float * 2, &packet_size);
+        HAL_UART_Transmit(&huart1, g_usart1_tx_buffer, packet_size, 1);
         printf("Get data cost time %f\r\n", HAL_GetTick() - t_start);
         printf("Adc interrupt, val2 = %f\r\n", g_adc_1_val);
     }
@@ -268,9 +240,9 @@ void TIM7_IRQHandler(void)
         g_bias_count++;
         g_adc_bias /= (float)bias_sample_time;
     }
-    float angle = g_adc_1_val*360.0 / 3.3;
-    angle -= (g_adc_bias*360.0 / 3.3);
-    sprintf(g_printf_char[0], "a=%.2fV , e=%d", g_adc_1_val, (int)angle);
+    float g_pendulum_angle = g_adc_1_val*360.0 / 3.3;
+    g_pendulum_angle -= (g_adc_bias*360.0 / 3.3);
+    sprintf(g_printf_char[0], "a=%.2fV , e=%d", g_adc_1_val, (int)g_pendulum_angle);
     //refresh_bai_IO(angle);
     refresh_motor_IO(&pid_motor_0);
     sprintf(g_printf_char[1], "pos= %d", pid_motor_0.m_current_pos);
@@ -292,11 +264,11 @@ void EXTI9_5_IRQHandler(void)
     /* USER CODE BEGIN EXTI9_5_IRQn 1 */
     if (HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_4) == 1)
     {
-        count_encoder++;
+        g_encoder_exti++;
     }
     else
     {
-        count_encoder--;
+        g_encoder_exti--;
     }
     /* USER CODE END EXTI9_5_IRQn 1 */
 }
@@ -319,9 +291,8 @@ void on_get_packet(char* packet_data, int packet_id, int packet_size)
 //Refreshe motor's state and output
 void refresh_motor_IO(PID_controller * pid)
 {
-    //pid->m_current_pos += (long)(*pid->m_timer_cnt - ENCODE_DEFAULT_BIAS)*360.0/pid->m_paulse_per_cir;
-    //*(pid->m_timer_cnt) = ENCODE_DEFAULT_BIAS;
-    pid->m_current_pos = (long)(*pid->m_timer_cnt - ENCODE_DEFAULT_BIAS)*360.0 / pid->m_paulse_per_cir;
+    pid->m_current_pos = (g_encoder_exti) *360 / pid->m_paulse_per_cir;
+    //pid->m_current_pos = (long)(*pid->m_timer_cnt - ENCODE_DEFAULT_BIAS)*360.0 / pid->m_paulse_per_cir;
     //if (enable_PID_control && 5 == index)
     if (pid->m_enable_PID_control)
     {
