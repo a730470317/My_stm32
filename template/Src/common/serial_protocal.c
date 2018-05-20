@@ -1,8 +1,13 @@
 #include "serial_protocal.h"
-
+#define  IF_DEBUG 0
 #define PACKET_END 0xff
 #define PACKET_START 0xff
+
+#if IF_DEBUG
 #define PRINTF printf
+#else
+#define PRINTF //
+#endif 
 //
 
 
@@ -40,6 +45,7 @@ int onRec(char c, char* rec_buffer, int* current_index, int *packet_id, int *_da
         *packet_id = (char)rec_buffer[*current_index - 1];
         data_size = rec_buffer[*current_index - 2];
         start_index = *current_index - data_size - 3 - 3;
+        PRINTF("--- %s ---\r\n", __FUNCTION__);
         PRINTF("e_id = %x\r\n", *packet_id);
         PRINTF("e_size = %x\r\n", data_size);
         //printf("id = %d\n", *packet_id);
@@ -61,6 +67,7 @@ int onRec(char c, char* rec_buffer, int* current_index, int *packet_id, int *_da
                 }
                 if (check_sum == rec_buffer[start_index + 3 + data_size])
                 {
+                    //Here set to zero.
                     *current_index = 0;
                     *_data_size = data_size;
                     /*printf("Get the message\r\n");

@@ -141,7 +141,7 @@ void SysTick_Handler(void)
 void TIM2_IRQHandler(void)
 {
     /* USER CODE BEGIN TIM2_IRQn 0 */
-    static int nbtime = 1;
+    static int nbtime = 0;
     int t_start = HAL_GetTick();
     static char str_buffer[100];
     static int sizeof_float = sizeof(float);
@@ -165,9 +165,13 @@ void TIM2_IRQHandler(void)
         memcpy(str_buffer,(char*)&temp_angle,  sizeof_float);
         memcpy(str_buffer + sizeof_float, (char*)&g_adc_1_val, sizeof_float);
         make_packet(str_buffer, g_usart1_tx_buffer, STM32_STATE_REPORT, sizeof_float * 2, &packet_size);
-        HAL_UART_Transmit(&huart1, g_usart1_tx_buffer, packet_size, 1);
-        printf("Get data cost time %f\r\n", HAL_GetTick() - t_start);
+				//if(nbtime<500)
+				{				
+					HAL_UART_Transmit(&huart1, g_usart1_tx_buffer, packet_size, 1);
+				}
+				printf("Get data cost time %f\r\n", HAL_GetTick() - t_start);
         printf("Adc interrupt, val2 = %f\r\n", g_adc_1_val);
+				nbtime++;
     }
     else
     {

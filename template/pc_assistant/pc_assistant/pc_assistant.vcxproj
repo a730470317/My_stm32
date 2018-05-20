@@ -95,6 +95,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,6 +138,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Src\common\serial_protocal.c" />
     <ClCompile Include="GeneratedFiles\Debug\moc_pc_assistant.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -157,6 +159,7 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pc_assistant.cpp" />
+    <ClCompile Include="serial_service.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="pc_assistant.h">
@@ -199,6 +202,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Src\common\serial_protocal.h" />
     <ClInclude Include="GeneratedFiles\ui_pc_assistant.h" />
     <ClInclude Include="import_lib.h" />
     <ClInclude Include="serial_service.h" />

@@ -8,7 +8,7 @@ pc_assistant::pc_assistant(QWidget *parent)
     init_signal_and_slot();
     //m_packet_rec_timer.start(2);
     //m_serial_rec_timer.start(2);
-
+    open_serial();
 }
 
 void pc_assistant::init_signal_and_slot()
