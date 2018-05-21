@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1213</width>
-    <height>830</height>
+    <width>253</width>
+    <height>216</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -90,8 +90,6 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="pc_assistant.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

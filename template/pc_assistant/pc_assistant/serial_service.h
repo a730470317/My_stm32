@@ -5,12 +5,23 @@
 #include <fstream>
 #include <QSerialPort>
 
+// For Qjson
+#include <QDebug>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QString>
+#include <QFile>
+
 #include <thread>
 #include <functional>
 #include <chrono>      // for thread::sleep.
 #include <mutex>
-//#include <unistd.h>
 #include "../../Src/common/serial_protocal.h"
+
+#if _WIN32
+#include <windows.h>
+#define  SYSTEM_PAUSE system("pause");
+#endif
 
 #define SERIAL_SERVICE_VERSION              "Serial_service_v0.1"
 #define SERIAL_SERVICE_DESC                 "The beta version."
@@ -18,7 +29,7 @@
 #define MAX_REC_BUFFER 10000
 
 using namespace std;
-
+using namespace Qt;
 struct Serial_config
 {
     string m_com_name;
@@ -30,6 +41,64 @@ struct Serial_config
         cout << "Buadrate =  " << m_buad_rate << endl;
         cout << "===== end =====" << endl;
     }
+
+    int load_from_json(const char* file_name)
+    {
+        cout << "Load config form "<< file_name << endl;
+        QFile file(file_name);
+        QByteArray saveData;
+        if (!file.open(QIODevice::ReadOnly)) 
+        {
+            qWarning("Couldn't open save file.");
+        }
+
+        if (file.isOpen())
+        {
+            saveData = file.readAll();
+            file.close();
+        }
+        else
+        {
+            return 0;
+        }
+
+        //qDebug() << saveData << endl;
+
+        QJsonParseError jsonError;
+        QJsonDocument doucment = QJsonDocument::fromJson(saveData, &jsonError);  // 转化为 JSON 文档
+        if (!doucment.isNull() && (jsonError.error == QJsonParseError::NoError)) 
+        {
+            QJsonObject obj = doucment.object();
+            m_com_name = obj.take("COM").toString().toStdString();
+            m_buad_rate = obj.take("BuadRate").toInt();
+            display();
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    int save_to_json(const char * file_name)
+    {
+        cout << "Save config to " << file_name << endl;
+        QFile file(file_name);
+
+        if (!file.open(QIODevice::WriteOnly)) 
+        {
+            qWarning("Couldn't open save file.");
+            return false;
+        }
+
+        QJsonObject gameObject;
+        gameObject.insert("COM", QString(m_com_name.c_str()));
+        gameObject.insert("BuadRate", m_buad_rate);
+        QJsonDocument saveDoc(gameObject);
+        file.write(saveDoc.toJson());
+        file.close(); 
+    }
+
 };
 
 struct Protocal_packet
@@ -92,18 +161,8 @@ public:
 
     void open_serial()
     {
-        ifstream ifs;
-        ifs.open("serial.config");
-        if (ifs.is_open())
-        {
-            ifs >> m_serial_config.m_com_name;
-            ifs >> m_serial_config.m_buad_rate;
-        }
-        else
-        {
-            m_serial_config.m_com_name = "COM5";
-            m_serial_config.m_buad_rate = 2000000;
-        }
+        m_serial_config.load_from_json("serial_config.json");
+        m_serial_config.save_to_json("saerial_config.json2");
         m_serial_config.display();
 
         m_serial.setPortName(m_serial_config.m_com_name.c_str());
@@ -122,6 +181,7 @@ public:
         {
             cout << "Open serial fail, please check!!!" << endl;;
         }
+        return;
         if (m_thread_ptr == NULL)
         {
             m_thread_ptr = new std::thread(&Serial_service::service, this);

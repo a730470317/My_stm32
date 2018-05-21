@@ -50,9 +50,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_pc_assistant.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_pc_assistant.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Src\common\serial_protocal.c">
       <Filter>Source Files\serial</Filter>
     </ClCompile>
@@ -66,9 +63,6 @@
     </CustomBuild>
     <CustomBuild Include="pc_assistant.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="pc_assistant.qrc">
-      <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

@@ -16,7 +16,6 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5B7B7790-C0CD-4443-A4DE-3E8015FDC3E5}.Debug|Win32.ActiveCfg = Debug|Win32
-		{5B7B7790-C0CD-4443-A4DE-3E8015FDC3E5}.Debug|Win32.Build.0 = Debug|Win32
 		{5B7B7790-C0CD-4443-A4DE-3E8015FDC3E5}.Debug|x64.ActiveCfg = Debug|Win32
 		{5B7B7790-C0CD-4443-A4DE-3E8015FDC3E5}.Release|Win32.ActiveCfg = Release|Win32
 		{5B7B7790-C0CD-4443-A4DE-3E8015FDC3E5}.Release|Win32.Build.0 = Release|Win32
@@ -32,5 +31,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		Qt5Version = msvc2013
 	EndGlobalSection
 EndGlobal
