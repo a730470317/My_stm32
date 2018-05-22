@@ -194,6 +194,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Src\common\serial_protocal.h" />
+    <ClInclude Include="color_print.h" />
     <ClInclude Include="GeneratedFiles\ui_pc_assistant.h" />
     <ClInclude Include="import_lib.h" />
     <ClInclude Include="serial_service.h" />

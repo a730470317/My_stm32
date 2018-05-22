@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <QSerialPort>
+#include <stdlib.h>
 
 // For Qjson
 #include <QDebug>
@@ -16,9 +17,11 @@
 #include <functional>
 #include <chrono>      // for thread::sleep.
 #include <mutex>
-#include "../../Src/common/serial_protocal.h"
 
-#if _WIN32
+#include "../../Src/common/serial_protocal.h"
+#include "color_print.h"
+
+#if 1
 #include <windows.h>
 #define  SYSTEM_PAUSE system("pause");
 #endif
@@ -29,17 +32,26 @@
 #define MAX_REC_BUFFER 10000
 
 using namespace std;
-using namespace Qt;
+//using namespace Qt;
 struct Serial_config
 {
     string m_com_name;
     int    m_buad_rate;
+
+    Serial_config()
+    {
+        m_com_name = string("COM9");
+        m_buad_rate = 2000000;
+    }
+
     void display()
     {
+        CONSOLE_SET_STYLE(CONSOLE_COLOR_BLUE, CONSOLE_COLOR_BLACK);
         cout << "===== Serial_config =====" << endl;
         cout << "Com name  =  " << m_com_name << endl;
         cout << "Buadrate =  " << m_buad_rate << endl;
         cout << "===== end =====" << endl;
+        CONSOLE_RESET_DEFAULT;
     }
 
     int load_from_json(const char* file_name)
@@ -62,10 +74,9 @@ struct Serial_config
             return 0;
         }
 
-        //qDebug() << saveData << endl;
-
+        // you can loop k higher to see more color 
         QJsonParseError jsonError;
-        QJsonDocument doucment = QJsonDocument::fromJson(saveData, &jsonError);  // 转化为 JSON 文档
+        QJsonDocument doucment = QJsonDocument::fromJson(saveData, &jsonError);
         if (!doucment.isNull() && (jsonError.error == QJsonParseError::NoError)) 
         {
             QJsonObject obj = doucment.object();
@@ -101,27 +112,45 @@ struct Serial_config
 
 };
 
-struct Protocal_packet
+struct Serial_packet
 {
+    enum Serial_direction
+    {
+        e_direction_unset = 0,
+        e_direction_in = 1,
+        e_direction_out = -1,
+    };
     int data_length;
     int packet_length;
     int id;
-    vector<char>	data;
+    Serial_direction direction;
 
-    Protocal_packet()
+    char data[1024];
+
+    Serial_packet()
     {
         data_length = 0;
         packet_length = 0;
         id = 0;
+        direction = e_direction_unset;
     }
 
     void display()
     {
-        for (int i = 0; i < data.size(); i++)
+        CONSOLE_SET_STYLE(CONSOLE_COLOR_YELLOW, CONSOLE_COLOR_BLACK);
+        switch (direction)
+        {
+        case e_direction_unset:break;
+        case e_direction_in : printf("==> "); break;
+        case e_direction_out: printf("<== "); break;
+        };
+        printf("[%d] ", id);
+        for (int i = 0; i < data_length; i++)
         {
             printf("%d, ", data[i]);
         }
         printf("\r\n");
+        CONSOLE_RESET_DEFAULT;
     }
 };
 
@@ -140,8 +169,8 @@ public:
     ~Protocal_to_mcu();
 
     void init(QSerialPort * serial);
-    void send_packet(Protocal_packet & packet);
-    void receive_packet(Protocal_packet packet);
+    void send_packet(Serial_packet & packet);
+    void receive_packet(Serial_packet packet);
 public:
 
 private:
@@ -162,7 +191,7 @@ public:
     void open_serial()
     {
         m_serial_config.load_from_json("serial_config.json");
-        m_serial_config.save_to_json("saerial_config.json2");
+        m_serial_config.save_to_json("saerial_config.json_bak");
         m_serial_config.display();
 
         m_serial.setPortName(m_serial_config.m_com_name.c_str());
@@ -170,31 +199,32 @@ public:
         m_serial.open(QIODevice::ReadWrite);
         m_serial.clear(QSerialPort::Direction::AllDirections);
         m_serial.setReadBufferSize(1000000);
-        
+
         if (m_serial.isOpen())
         {
             cout << "Open serial success!!\n" << endl;
-            cout << "Com = " << m_serial_config.m_com_name << endl; 
-            cout << "BuadRate  = " << m_serial_config.m_buad_rate << endl;
         }
         else
         {
             cout << "Open serial fail, please check!!!" << endl;;
         }
-        return;
+
         if (m_thread_ptr == NULL)
         {
             m_thread_ptr = new std::thread(&Serial_service::service, this);
         }
+        return;
+
         //m_thread = std::thread(&Serial_service::service, this);
         //m_thread->detach();
+
     }
 
     void service()
     {
         QByteArray serial_data;
         char packet_data[MAX_REC_BUFFER];
-        Protocal_packet packet;
+        Serial_packet packet;
         int rec_buffer_count = 0;
         while (1)
         {
@@ -215,18 +245,16 @@ public:
                     {
                         m_packet_mcu.m_current_rec_index = 0;
                     }
-                    if (onRec(serial_data[i], m_packet_mcu.m_rec_buffer, &m_packet_mcu.m_current_rec_index, &packet.id, &packet.data_length, packet_data))
+                    if (onRec(serial_data[i], m_packet_mcu.m_rec_buffer, &m_packet_mcu.m_current_rec_index, &packet.id, &packet.data_length, packet.data))
                     {
                         rec_buffer_count++;
                         printf("--- Rec data %d --- \r\n", rec_buffer_count);
-                        cout << "Index =  " << m_packet_mcu.m_current_rec_index << endl;
-                        cout << "packet id = " << packet.id << endl;
-                        cout << "data size = " << packet.data_length << endl;
+                        packet.display();
                         if (packet.id == 0x10)
                         {
                             float f_data[2];
-                            memcpy((char*)f_data, packet_data, sizeof(float));
-                            memcpy((char*)&f_data[1], packet_data + sizeof(float), sizeof(float));
+                            memcpy((char*)f_data, packet.data, sizeof(float));
+                            memcpy((char*)&f_data[1], packet.data + sizeof(float), sizeof(float));
                             printf("%f, %f\r\n", f_data[0], f_data[1]);
                         }
                     }

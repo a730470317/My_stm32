@@ -78,5 +78,8 @@
     <ClInclude Include="serial_service.h">
       <Filter>Source Files\serial</Filter>
     </ClInclude>
+    <ClInclude Include="color_print.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
