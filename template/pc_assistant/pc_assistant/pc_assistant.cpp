@@ -8,7 +8,7 @@ pc_assistant::pc_assistant(QWidget *parent)
     init_signal_and_slot();
     //m_packet_rec_timer.start(100);
     //m_serial_rec_timer.start(100);
-    open_serial();
+    init_serial();
 }
 
 void pc_assistant::init_signal_and_slot()
@@ -29,6 +29,8 @@ pc_assistant::~pc_assistant()
 void pc_assistant::slot_on_click_start()
 {
   std::cout << "slot_on_click_start" << std::endl;
+  Serial_packet packet;
+  emit signal_on_rec_serial_packet(packet);
 }
 
 void pc_assistant::slot_on_packet_timeout()

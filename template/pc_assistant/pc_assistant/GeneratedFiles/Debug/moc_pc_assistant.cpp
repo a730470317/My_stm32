@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_pc_assistant_t {
-    QByteArrayData data[6];
-    char stringdata0[101];
+    QByteArrayData data[9];
+    char stringdata0[157];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -30,16 +30,20 @@ struct qt_meta_stringdata_pc_assistant_t {
 static const qt_meta_stringdata_pc_assistant_t qt_meta_stringdata_pc_assistant = {
     {
 QT_MOC_LITERAL(0, 0, 12), // "pc_assistant"
-QT_MOC_LITERAL(1, 13, 19), // "slot_on_click_start"
-QT_MOC_LITERAL(2, 33, 0), // ""
-QT_MOC_LITERAL(3, 34, 22), // "slot_on_serial_timeout"
-QT_MOC_LITERAL(4, 57, 22), // "slot_on_packet_timeout"
-QT_MOC_LITERAL(5, 80, 20) // "init_signal_and_slot"
+QT_MOC_LITERAL(1, 13, 27), // "signal_on_rec_serial_packet"
+QT_MOC_LITERAL(2, 41, 0), // ""
+QT_MOC_LITERAL(3, 42, 13), // "Serial_packet"
+QT_MOC_LITERAL(4, 56, 13), // "serial_packet"
+QT_MOC_LITERAL(5, 70, 19), // "slot_on_click_start"
+QT_MOC_LITERAL(6, 90, 22), // "slot_on_serial_timeout"
+QT_MOC_LITERAL(7, 113, 22), // "slot_on_packet_timeout"
+QT_MOC_LITERAL(8, 136, 20) // "init_signal_and_slot"
 
     },
-    "pc_assistant\0slot_on_click_start\0\0"
-    "slot_on_serial_timeout\0slot_on_packet_timeout\0"
-    "init_signal_and_slot"
+    "pc_assistant\0signal_on_rec_serial_packet\0"
+    "\0Serial_packet\0serial_packet\0"
+    "slot_on_click_start\0slot_on_serial_timeout\0"
+    "slot_on_packet_timeout\0init_signal_and_slot"
 };
 #undef QT_MOC_LITERAL
 
@@ -49,18 +53,24 @@ static const uint qt_meta_data_pc_assistant[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       4,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       0,       // signalCount
+       1,       // signalCount
+
+ // signals: name, argc, parameters, tag, flags
+       1,    1,   39,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   34,    2, 0x0a /* Public */,
-       3,    0,   35,    2, 0x0a /* Public */,
-       4,    0,   36,    2, 0x0a /* Public */,
-       5,    0,   37,    2, 0x0a /* Public */,
+       5,    0,   42,    2, 0x0a /* Public */,
+       6,    0,   43,    2, 0x0a /* Public */,
+       7,    0,   44,    2, 0x0a /* Public */,
+       8,    0,   45,    2, 0x0a /* Public */,
+
+ // signals: parameters
+    QMetaType::Void, 0x80000000 | 3,    4,
 
  // slots: parameters
     QMetaType::Void,
@@ -77,14 +87,23 @@ void pc_assistant::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         pc_assistant *_t = static_cast<pc_assistant *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->slot_on_click_start(); break;
-        case 1: _t->slot_on_serial_timeout(); break;
-        case 2: _t->slot_on_packet_timeout(); break;
-        case 3: _t->init_signal_and_slot(); break;
+        case 0: _t->signal_on_rec_serial_packet((*reinterpret_cast< Serial_packet(*)>(_a[1]))); break;
+        case 1: _t->slot_on_click_start(); break;
+        case 2: _t->slot_on_serial_timeout(); break;
+        case 3: _t->slot_on_packet_timeout(); break;
+        case 4: _t->init_signal_and_slot(); break;
         default: ;
         }
+    } else if (_c == QMetaObject::IndexOfMethod) {
+        int *result = reinterpret_cast<int *>(_a[0]);
+        void **func = reinterpret_cast<void **>(_a[1]);
+        {
+            typedef void (pc_assistant::*_t)(Serial_packet );
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&pc_assistant::signal_on_rec_serial_packet)) {
+                *result = 0;
+            }
+        }
     }
-    Q_UNUSED(_a);
 }
 
 const QMetaObject pc_assistant::staticMetaObject = {
@@ -114,14 +133,21 @@ int pc_assistant::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 4)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
+        _id -= 5;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 4)
+        if (_id < 5)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 4;
+        _id -= 5;
     }
     return _id;
+}
+
+// SIGNAL 0
+void pc_assistant::signal_on_rec_serial_packet(Serial_packet _t1)
+{
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 QT_END_MOC_NAMESPACE

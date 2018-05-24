@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <QMainWindow>
 #include <QSerialPort>
 #include <stdlib.h>
 
@@ -125,10 +126,11 @@ struct Serial_packet
     int id;
     Serial_direction direction;
 
-    char data[1024];
+    char *data;
 
     Serial_packet()
     {
+        data = new char[1024];
         data_length = 0;
         packet_length = 0;
         id = 0;
@@ -163,8 +165,6 @@ public:
     int m_current_rec_index = 0;;
     std::mutex m_mutex;
     QSerialPort * m_serial;
-
-
     Protocal_to_mcu();
     ~Protocal_to_mcu();
 
@@ -178,104 +178,26 @@ private:
 
 class Serial_service
 {
-
 public:
     QSerialPort     m_serial;
     std::string     m_serial_name;
     Serial_config   m_serial_config;
     std::thread     m_thread;
     std::thread     *m_thread_ptr=NULL;
+    int             m_rec_frequency = 50;   //rec frequency  = 50hz
     Protocal_to_mcu m_packet_mcu;
+
+signals:
+    void signal_on_rec_serial_packet(Serial_packet serial_packet);
+    void signal_on_rec_serial_packet(void){};
+
 public:
 
-    void open_serial()
-    {
-        m_serial_config.load_from_json("serial_config.json");
-        m_serial_config.save_to_json("saerial_config.json_bak");
-        m_serial_config.display();
+    void init_serial();
 
-        m_serial.setPortName(m_serial_config.m_com_name.c_str());
-        m_serial.setBaudRate(m_serial_config.m_buad_rate);
-        m_serial.open(QIODevice::ReadWrite);
-        m_serial.clear(QSerialPort::Direction::AllDirections);
-        m_serial.setReadBufferSize(1000000);
+    void service();
 
-        if (m_serial.isOpen())
-        {
-            cout << "Open serial success!!\n" << endl;
-        }
-        else
-        {
-            cout << "Open serial fail, please check!!!" << endl;;
-        }
-
-        if (m_thread_ptr == NULL)
-        {
-            m_thread_ptr = new std::thread(&Serial_service::service, this);
-        }
-        return;
-
-        //m_thread = std::thread(&Serial_service::service, this);
-        //m_thread->detach();
-
-    }
-
-    void service()
-    {
-        QByteArray serial_data;
-        char packet_data[MAX_REC_BUFFER];
-        Serial_packet packet;
-        int rec_buffer_count = 0;
-        while (1)
-        {
-            //usleep(1.0e3);
-            //Sleep(100);
-            //cout << __FUNCTION__ << endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            if (m_serial.isOpen())
-            {
-                serial_data.clear();
-                serial_data = m_serial.readAll();
-                m_serial.clear(QSerialPort::Direction::Input);
-                //cout << "----- " << serial_data.size()  << " ----- "<< endl;
-                for (int i = 0; i < serial_data.size();i++)
-                {
-                    //printf("%x ", serial_data[i] & 0xff );
-                    if (m_packet_mcu.m_current_rec_index > MAX_REC_BUFFER)
-                    {
-                        m_packet_mcu.m_current_rec_index = 0;
-                    }
-                    if (onRec(serial_data[i], m_packet_mcu.m_rec_buffer, &m_packet_mcu.m_current_rec_index, &packet.id, &packet.data_length, packet.data))
-                    {
-                        rec_buffer_count++;
-                        printf("--- Rec data %d --- \r\n", rec_buffer_count);
-                        packet.display();
-                        if (packet.id == 0x10)
-                        {
-                            float f_data[2];
-                            memcpy((char*)f_data, packet.data, sizeof(float));
-                            memcpy((char*)&f_data[1], packet.data + sizeof(float), sizeof(float));
-                            printf("%f, %f\r\n", f_data[0], f_data[1]);
-                        }
-                    }
-                }
-
-            }
-        }
-    }
-
-    void print_serial_service_version()
-    {
-        cout << "===== SERIAL_SERVICE_VERSION =====" << endl;
-        cout << "Version:       " << SERIAL_SERVICE_VERSION << endl;
-        cout << "Version desc:  " << SERIAL_SERVICE_DESC << endl;
-        cout << "Build date is: " << __DATE__ << "  " << __TIME__ << endl;
-        cout << "===== End =====" << endl;
-    }
-
-    virtual void slot_on_serial_timeout() = 0;
-    virtual void slot_on_packet_timeout() = 0;
-
+    void print_serial_service_version();
 };
 
 #endif

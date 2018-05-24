@@ -29,7 +29,8 @@ public:
     void slot_on_packet_timeout();
 
     void init_signal_and_slot();
-
+signals:
+    void signal_on_rec_serial_packet(Serial_packet serial_packet);
 private:
     Ui::pc_assistantClass ui;
 };
