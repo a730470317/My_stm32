@@ -88,6 +88,16 @@ public:
         sizePolicy1.setVerticalStretch(0);
         sizePolicy1.setHeightForWidth(dial_circle->sizePolicy().hasHeightForWidth());
         dial_circle->setSizePolicy(sizePolicy1);
+        dial_circle->setMinimum(0);
+        dial_circle->setMaximum(360);
+        dial_circle->setPageStep(0);
+        dial_circle->setValue(360);
+        dial_circle->setOrientation(Qt::Vertical);
+        dial_circle->setInvertedAppearance(true);
+        dial_circle->setInvertedControls(true);
+        dial_circle->setWrapping(true);
+        dial_circle->setNotchTarget(5);
+        dial_circle->setNotchesVisible(true);
 
         gridLayout->addWidget(dial_circle, 1, 1, 2, 1);
 

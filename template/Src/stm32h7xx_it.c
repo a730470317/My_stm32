@@ -208,8 +208,12 @@ void USART1_IRQHandler(void)
 #endif
     if (onRec(g_usart1_rec_char, g_usart1_rx_buffer, &current_index, &packet_id, &packet_size, packet_data))
     {
+        RED_LED_ON;
         current_index = 0;
         on_get_packet(packet_data, packet_id, packet_size);
+        //HAL_Delay(1);
+        RED_LED_OFF;
+        //HAL_Delay(1);
     }
     if (current_index >= USART_RX_SIZE)
     {

@@ -197,6 +197,8 @@ public:
         cout << "You receive serial packet, but you do not inherit " << __FUNCTION__ << " in  your class, please check this." << endl;
     };
 
+    void send_packet(Serial_packet packet);
+
     void init_serial();
 
     void service();
