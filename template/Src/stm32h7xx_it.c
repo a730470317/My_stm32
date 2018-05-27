@@ -162,8 +162,10 @@ void TIM2_IRQHandler(void)
         }
         g_usart1_rx_head_bias = 0;
 #endif
-        g_mcu_state.m_adc_encoder = g_adc_1_val;
+        g_mcu_state.m_adc_encoder_val = g_adc_1_val;
+        g_mcu_state.m_pendulum_pos = g_pendulum_angle;
         g_mcu_state.m_motor_pos = pid_motor_0.m_current_pos;
+        
         memcpy(str_buffer, (char*)&g_mcu_state, sizeof(MCU_STATE));
         make_packet(str_buffer, g_usart1_tx_buffer, STM32_MCU_STATE_REPORT, sizeof(MCU_STATE), &packet_size);
         //if(nbtime<500)

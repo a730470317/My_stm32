@@ -47,9 +47,9 @@ void pc_assistant::on_serial_callback(Serial_packet packet)
     {
     case STM32_MCU_STATE_REPORT:
         memcpy((void *)&m_mcu_state, packet.data, sizeof(MCU_STATE));
-        cout << "Adc =  " << m_mcu_state.m_adc_encoder << " , pos = " << m_mcu_state.m_motor_pos << endl;
-        //if(ui_busy==0)
-        emit signal_on_refresh_mcu_state(&m_mcu_state);
+        cout << "Adc =  " << m_mcu_state.m_adc_encoder_val << " , pos = " << m_mcu_state.m_motor_pos << endl;
+        if(ui_busy==0)
+            emit signal_on_refresh_mcu_state(&m_mcu_state);
         break;
     default:
         cout << "Unrecongize packet, " << endl;
@@ -57,7 +57,7 @@ void pc_assistant::on_serial_callback(Serial_packet packet)
         break;
     }
 
-    packet.id = 255 - packet.id;
+    //packet.id = 255 - packet.id;
     //send_packet(packet);
     //emit signal_on_send_serial_packet(&packet);
 };
@@ -80,7 +80,7 @@ void pc_assistant::slot_on_refresh_mcu_state(MCU_STATE * mcu_state)
     {
     }*/
     char show_text[1024];
-    sprintf(show_text, "adc_val = %.2f\r\n", mcu_state->m_adc_encoder);
+    sprintf(show_text, " Adc_val = %.2f\r\n Pendulum pos = %.2f\r\n", mcu_state->m_adc_encoder_val,mcu_state->m_pendulum_pos);
     ui.label_message->setText(show_text);
     ui.dial_circle->repaint();
     ui_busy = 0;

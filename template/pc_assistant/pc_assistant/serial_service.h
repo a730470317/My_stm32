@@ -13,6 +13,8 @@
 #include <QJsonDocument>
 #include <QString>
 #include <QFile>
+#include <QDate>
+#include <QDateTime>
 
 #include <thread>
 #include <functional>
@@ -191,7 +193,7 @@ public:
     std::thread     *m_thread_ptr=NULL;
     int             m_rec_frequency = 50;   //rec frequency  = 50hz
     Protocal_to_mcu m_packet_mcu;
-
+    ofstream        m_logger_ofs;
 public:
 
     virtual void on_serial_callback(Serial_packet packet)

@@ -57,16 +57,36 @@ void Serial_service::init_serial()
     m_serial_config.load_from_json("serial_config.json");
     m_serial_config.save_to_json("saerial_config.json_bak");
     m_serial_config.display();
+    m_serial.setReadBufferSize(100000);
 
     m_serial.setPortName(m_serial_config.m_com_name.c_str());
     m_serial.setBaudRate(m_serial_config.m_buad_rate);
-    m_serial.open(QIODevice::ReadWrite);
     m_serial.setDataBits(QSerialPort::Data8);
     m_serial.setParity(QSerialPort::OddParity);
     //m_serial.setStopBits(QSerialPort::OneStop);
     m_serial.clear(QSerialPort::Direction::AllDirections);
-    m_serial.setReadBufferSize(100000000);
+    m_serial.open(QIODevice::ReadWrite);
+    m_serial.clear(QSerialPort::Direction::AllDirections);
+    m_serial.setReadBufferSize(100000);
 
+
+    if (!m_logger_ofs.is_open())
+    {
+        std::string file_name;
+        file_name = string("./serial_log_") 
+            + string(QDate::currentDate().toString(Qt::ISODate).toStdString()) + "_"
+            + string(QTime::currentTime().toString(Qt::ISODate).toStdString())
+            + string(".log");
+
+        while (file_name.find(":") != string::npos)
+            file_name.replace(file_name.find(":"), 1, "_");
+
+        while (file_name.find("-") != string::npos)
+            file_name.replace(file_name.find("-"), 1, "_");
+        
+        //cout << "Logger file name : " << file_name << endl;
+        m_logger_ofs.open(file_name.c_str());
+    }
 
     if (m_serial.isOpen())
     {
@@ -79,6 +99,11 @@ void Serial_service::init_serial()
 
     if (1)
     {
+        if (m_thread_ptr != NULL)
+        {
+            delete m_thread_ptr;
+        }
+
         m_thread_ptr = new std::thread(&Serial_service::service, this);
         m_thread_ptr->detach();
     }
@@ -112,8 +137,6 @@ void Serial_service::service()
             if (m_serial.isOpen())
             {
 
-                int b = 0;
-                int a = 3 / b;
                 //if (m_serial.isDataTerminalReady() && m_serial.isReadable())
                 //if ( m_serial.waitForReadyRead(1) )
                 if (m_serial.isReadable())
@@ -164,10 +187,22 @@ void Serial_service::service()
     catch (...)
     {
         CONSOLE_SET_TEXT_RED;
-        cout << "Something error happened!!! " << __FUNCTION__ << "  " << __LINE__ << endl;
+        m_logger_ofs << "Crash !!! @ "
+            << string(QDate::currentDate().toString(Qt::ISODate).toStdString()) << "  "
+            << string(QTime::currentTime().toString(Qt::ISODate).toStdString()) << endl;
+        m_logger_ofs.flush();
+
+        cout << "Something error happened!!! "  <<__FUNCTION__ << "  " << __LINE__ << endl;
+        //m_serial.waitForReadyRead(1000);
+        //m_serial.clear();
+        cout << "Error : " << m_serial.errorString().toStdString() << endl;
+        m_serial.clearError();
+        m_serial.reset();
+        m_serial.clear();
         m_serial.close();
+        m_serial.clear();
+
         CONSOLE_RESET_DEFAULT;
-        delete m_thread_ptr;
         on_serial_error_happen();
         return;
     }
