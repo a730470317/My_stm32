@@ -18,6 +18,7 @@
 #include <functional>
 #include <chrono>      // for thread::sleep.
 #include <mutex>
+#include <exception>  
 
 #include "../../Src/common/serial_protocal.h"
 #include "../../Src/communication_id.h"
@@ -182,6 +183,7 @@ typedef void(*service_callback)(Serial_packet serial_packet);
 class Serial_service
 {
 public:
+    std::mutex      m_mutex_serial_mutex;
     QSerialPort     m_serial;
     std::string     m_serial_name;
     Serial_config   m_serial_config;
@@ -196,6 +198,8 @@ public:
     {
         cout << "You receive serial packet, but you do not inherit " << __FUNCTION__ << " in  your class, please check this." << endl;
     };
+
+    virtual void on_serial_error_happen(){};
 
     void send_packet(Serial_packet packet);
 

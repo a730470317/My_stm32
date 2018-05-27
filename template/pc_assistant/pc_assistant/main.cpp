@@ -11,6 +11,21 @@
 
 int main(int argc, char *argv[])
 {
+    int i = 1;
+    int j = 0;
+
+    try
+    {
+        i /= j;
+    }
+    catch (...)
+    {
+        cout << "0除异常" << endl;
+    }
+
+
+
+
     //解决库路径问题============info@seatrix.com
     QTextCodec *xcodec = QTextCodec::codecForLocale();
     QString exeDir = xcodec->toUnicode(QByteArray(argv[0]));

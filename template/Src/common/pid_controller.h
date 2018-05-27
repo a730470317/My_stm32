@@ -29,17 +29,17 @@ typedef struct
 
     // Speed
     float   m_target_speed;
-    float	  m_current_speed;
+    float	m_current_speed;
     float   m_speed_delta;
     float   m_speed_err_integral_val;
     int     m_speed_intergral_time;
     float   m_speed_err_vec[MAX_SPEED_INTEGRAL_TIME];
 
     // POS:
-    long 		m_target_pos;
-    long 		m_current_pos;
-    long 		m_output;
-    long 		m_pos_err_integral_val;
+    float 		m_target_pos;
+    float 		m_current_pos;
+    float 		m_output;
+    float 		m_pos_err_integral_val;
     int  		m_pos_intergral_time;
     long 		m_pos_err_vec[MAX_POS_INTEGRAL_TIME];
 
@@ -48,9 +48,9 @@ typedef struct
     char 		m_motor_enable;
     // Control bit
     int  		m_enable_PID_control;
-    int	 		m_paulse_per_cir;
-    int     m_ctrl_max_pwm;
-    float   m_ctrl_max_spd;
+    float	 	m_paulse_per_cir;
+    int         m_ctrl_max_pwm;
+    float       m_ctrl_max_spd;
 
 
     __IO uint32_t * m_pwm_output;

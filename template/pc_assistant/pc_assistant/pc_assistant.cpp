@@ -23,17 +23,18 @@ pc_assistant::pc_assistant(QWidget *parent)
 
 void pc_assistant::init_signal_and_slot()
 {
-
-
-
     connect(ui.pushButton_exit, SIGNAL(clicked()), this, SLOT(close()));
     connect(ui.pushButton_start, SIGNAL(clicked()), this, SLOT(slot_on_click_start()));
 
     connect(this, SIGNAL(signal_on_refresh_mcu_state(MCU_STATE*)), this, SLOT(slot_on_refresh_mcu_state(MCU_STATE*)), Qt::ConnectionType::UniqueConnection);
     connect(this, SIGNAL(signal_on_send_serial_packet(Serial_packet*)), this, SLOT(slot_on_send_serial_packet(Serial_packet*)), Qt::ConnectionType::UniqueConnection);
+    connect(this, SIGNAL(signal_on_serial_error_happen()), this, SLOT(slot_on_click_start()), Qt::ConnectionType::UniqueConnection);
+
 
     connect(&m_serial_rec_timer, SIGNAL(timeout()), this, SLOT(slot_on_serial_timeout()));
     connect(&m_packet_rec_timer, SIGNAL(timeout()), this, SLOT(slot_on_packet_timeout()));
+
+
 
 }
 
@@ -88,7 +89,7 @@ void pc_assistant::slot_on_refresh_mcu_state(MCU_STATE * mcu_state)
 void pc_assistant::slot_on_click_start()
 {
     std::cout << "slot_on_click_start" << std::endl;
-    Serial_packet packet;
+    init_serial();
 }
 
 void pc_assistant::slot_on_packet_timeout()

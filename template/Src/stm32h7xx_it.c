@@ -34,7 +34,7 @@ char g_usart1_rec_char;
 extern char g_printf_char[4][16];
 
 int g_encoder_exti = 0;
-int g_pendulum_angle = 0;
+float g_pendulum_angle = 0;
 MCU_STATE g_mcu_state;
 void on_get_packet(char* packet_data, int packet_id, int packet_size);
 void refresh_bai_IO(float bai);
@@ -162,7 +162,6 @@ void TIM2_IRQHandler(void)
         }
         g_usart1_rx_head_bias = 0;
 #endif
-        float temp_angle = pid_motor_0.m_current_pos;
         g_mcu_state.m_adc_encoder = g_adc_1_val;
         g_mcu_state.m_motor_pos = pid_motor_0.m_current_pos;
         memcpy(str_buffer, (char*)&g_mcu_state, sizeof(MCU_STATE));
@@ -235,7 +234,9 @@ void TIM7_IRQHandler(void)
 {
     /* USER CODE BEGIN TIM7_IRQn 0 */
     GREEN_LED_ON
-        HAL_TIM_IRQHandler(&htim7);
+    HAL_TIM_IRQHandler(&htim7);
+    
+    /*Pendulum state update*/
     g_adc_1_val = g_adc_val_raw[0] * 3.3f / 0xffff;
     int bias_sample_time = 2000;
     if (g_bias_count < bias_sample_time)
@@ -250,14 +251,16 @@ void TIM7_IRQHandler(void)
         g_bias_count++;
         g_adc_bias /= (float)bias_sample_time;
     }
-    float g_pendulum_angle = g_adc_1_val*360.0 / 3.3;
+    g_pendulum_angle = g_adc_1_val*360.0 / 3.3;
     g_pendulum_angle -= (g_adc_bias*360.0 / 3.3);
+    /*Pendulum state update*/
+    
     sprintf(g_printf_char[0], "a=%.2fV , e=%d", g_adc_1_val, (int)g_pendulum_angle);
     //refresh_bai_IO(angle);
     refresh_motor_IO(&pid_motor_0);
-    sprintf(g_printf_char[1], "pos= %d", pid_motor_0.m_current_pos);
+    sprintf(g_printf_char[1], "pos= %.2f", pid_motor_0.m_current_pos);
     GREEN_LED_OFF
-        /* USER CODE END TIM7_IRQn 1 */
+    /* USER CODE END TIM7_IRQn 1 */
 }
 
 void TIM15_IRQHandler(void)
@@ -301,7 +304,7 @@ void on_get_packet(char* packet_data, int packet_id, int packet_size)
 //Refreshe motor's state and output
 void refresh_motor_IO(PID_controller * pid)
 {
-    pid->m_current_pos = (g_encoder_exti)* 360 / pid->m_paulse_per_cir;
+    pid->m_current_pos = ((float)g_encoder_exti)* 360.0 / (float)pid->m_paulse_per_cir;
     //pid->m_current_pos = (long)(*pid->m_timer_cnt - ENCODE_DEFAULT_BIAS)*360.0 / pid->m_paulse_per_cir;
     //if (enable_PID_control && 5 == index)
     if (pid->m_enable_PID_control)

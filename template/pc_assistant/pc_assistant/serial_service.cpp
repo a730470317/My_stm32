@@ -51,6 +51,7 @@ void Protocal_to_mcu::receive_packet(Serial_packet packet)
 void Serial_service::init_serial()
 {
     //g_serial_service = this;
+    std::unique_lock<std::mutex> lock(m_mutex_serial_mutex);
     qRegisterMetaType<Serial_packet>("Serial_packet");
 
     m_serial_config.load_from_json("serial_config.json");
@@ -76,9 +77,10 @@ void Serial_service::init_serial()
         cout << "Open serial fail, please check!!!" << endl;;
     }
 
-    if (m_thread_ptr == NULL)
+    if (1)
     {
         m_thread_ptr = new std::thread(&Serial_service::service, this);
+        m_thread_ptr->detach();
     }
     return;
 
@@ -96,24 +98,28 @@ void Serial_service::send_packet(Serial_packet packet)
 
 void Serial_service::service()
 {
+    std::unique_lock<std::mutex> lock(m_mutex_serial_mutex);
     QByteArray serial_data;
     char packet_data[MAX_REC_BUFFER];
     Serial_packet packet;
     int rec_buffer_count = 0;
-    while (1)
+    try
     {
-        int get_data = 0;
-        std::this_thread::sleep_for(std::chrono::milliseconds((int)(1000 / m_rec_frequency)));
-        if (m_serial.isOpen() )
+        while (1)
         {
-            try
+            int get_data = 0;
+            std::this_thread::sleep_for(std::chrono::milliseconds((int)(1000 / m_rec_frequency)));
+            if (m_serial.isOpen())
             {
+
+                int b = 0;
+                int a = 3 / b;
                 //if (m_serial.isDataTerminalReady() && m_serial.isReadable())
                 //if ( m_serial.waitForReadyRead(1) )
                 if (m_serial.isReadable())
                 {
                     serial_data = m_serial.readAll();
-                    //serial_data = m_serial.read(100000);
+                    //serial_data = m_serial.read(100);
                     m_serial.clear();
                     //m_serial.close();
                     //m_serial.open(QIODevice::ReadWrite);
@@ -122,40 +128,48 @@ void Serial_service::service()
                 {
                     continue;
                 }
-            }
-            catch (...)
-            {
-                CONSOLE_SET_TEXT_RED;
-                cout << "Something error happened!!! " << __FUNCTION__ << "  " << __LINE__ << endl;
-            }
-            //cout << "----- " << serial_data.size()  << " ----- "<< endl;
-            for (int i = 0; i < serial_data.size(); i++)
-            {
-                //printf("%x ", serial_data[i] & 0xff );
 
-                if (m_packet_mcu.m_current_rec_index > MAX_REC_BUFFER)
-                {
-                    m_packet_mcu.m_current_rec_index = 0;
-                }
-                if (onRec(serial_data[i], m_packet_mcu.m_rec_buffer, &m_packet_mcu.m_current_rec_index, &packet.id, &packet.data_length, packet.data))
-                {
-                    cout << "Serial size = " <<serial_data.size() << endl;
-                    get_data = 1;
-                    rec_buffer_count++;
-                    on_serial_callback(packet);
-                    //printf("--- Rec data %d --- \r\n", rec_buffer_count);
-                    //packet.display();
-                    //if (packet.id == 0x10)
-                    //{
-                    //    float f_data[2];
-                    //    memcpy((char*)f_data, packet.data, sizeof(float));
-                    //    memcpy((char*)&f_data[1], packet.data + sizeof(float), sizeof(float));
-                    //    printf("%f, %f\r\n", f_data[0], f_data[1]);
-                    //}
-                }
-            }
+                //catch (...)
 
+                //cout << "----- " << serial_data.size()  << " ----- "<< endl;
+                for (int i = 0; i < serial_data.size(); i++)
+                {
+                    //printf("%x ", serial_data[i] & 0xff );
+
+                    if (m_packet_mcu.m_current_rec_index > MAX_REC_BUFFER)
+                    {
+                        m_packet_mcu.m_current_rec_index = 0;
+                    }
+                    if (onRec(serial_data[i], m_packet_mcu.m_rec_buffer, &m_packet_mcu.m_current_rec_index, &packet.id, &packet.data_length, packet.data))
+                    {
+                        cout << "Serial size = " << serial_data.size() << endl;
+                        get_data = 1;
+                        rec_buffer_count++;
+                        on_serial_callback(packet);
+                        //printf("--- Rec data %d --- \r\n", rec_buffer_count);
+                        //packet.display();
+                        //if (packet.id == 0x10)
+                        //{
+                        //    float f_data[2];
+                        //    memcpy((char*)f_data, packet.data, sizeof(float));
+                        //    memcpy((char*)&f_data[1], packet.data + sizeof(float), sizeof(float));
+                        //    printf("%f, %f\r\n", f_data[0], f_data[1]);
+                        //}
+                    }
+                }
+
+            }
         }
+    }
+    catch (...)
+    {
+        CONSOLE_SET_TEXT_RED;
+        cout << "Something error happened!!! " << __FUNCTION__ << "  " << __LINE__ << endl;
+        m_serial.close();
+        CONSOLE_RESET_DEFAULT;
+        delete m_thread_ptr;
+        on_serial_error_happen();
+        return;
     }
 }
 
