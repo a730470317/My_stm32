@@ -3,6 +3,12 @@
 #include <QStyleFactory> 
 #include "qtextcodec.h"
 #include "qfileinfo.h"
+
+#include <functional>
+#include <iostream>
+#include <string>
+
+
 int main(int argc, char *argv[])
 {
     //解决库路径问题============info@seatrix.com
@@ -18,7 +24,8 @@ int main(int argc, char *argv[])
     //=========================
     QApplication::setStyle(QStyleFactory::create("Fusion"));
     QApplication a(argc, argv);
-    pc_assistant w;
-    w.show();
+   
+    pc_assistant w; 
+
     return a.exec();
 }

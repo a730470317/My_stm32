@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_pc_assistant_t {
-    QByteArrayData data[9];
-    char stringdata0[157];
+    QByteArrayData data[11];
+    char stringdata0[183];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -37,13 +37,16 @@ QT_MOC_LITERAL(4, 56, 13), // "serial_packet"
 QT_MOC_LITERAL(5, 70, 19), // "slot_on_click_start"
 QT_MOC_LITERAL(6, 90, 22), // "slot_on_serial_timeout"
 QT_MOC_LITERAL(7, 113, 22), // "slot_on_packet_timeout"
-QT_MOC_LITERAL(8, 136, 20) // "init_signal_and_slot"
+QT_MOC_LITERAL(8, 136, 20), // "init_signal_and_slot"
+QT_MOC_LITERAL(9, 157, 18), // "on_serial_callback"
+QT_MOC_LITERAL(10, 176, 6) // "packet"
 
     },
     "pc_assistant\0signal_on_rec_serial_packet\0"
     "\0Serial_packet\0serial_packet\0"
     "slot_on_click_start\0slot_on_serial_timeout\0"
-    "slot_on_packet_timeout\0init_signal_and_slot"
+    "slot_on_packet_timeout\0init_signal_and_slot\0"
+    "on_serial_callback\0packet"
 };
 #undef QT_MOC_LITERAL
 
@@ -53,7 +56,7 @@ static const uint qt_meta_data_pc_assistant[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   14, // methods
+       6,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -61,13 +64,14 @@ static const uint qt_meta_data_pc_assistant[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   39,    2, 0x06 /* Public */,
+       1,    1,   44,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       5,    0,   42,    2, 0x0a /* Public */,
-       6,    0,   43,    2, 0x0a /* Public */,
-       7,    0,   44,    2, 0x0a /* Public */,
-       8,    0,   45,    2, 0x0a /* Public */,
+       5,    0,   47,    2, 0x0a /* Public */,
+       6,    0,   48,    2, 0x0a /* Public */,
+       7,    0,   49,    2, 0x0a /* Public */,
+       8,    0,   50,    2, 0x0a /* Public */,
+       9,    1,   51,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3,    4,
@@ -77,6 +81,7 @@ static const uint qt_meta_data_pc_assistant[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 3,   10,
 
        0        // eod
 };
@@ -92,6 +97,7 @@ void pc_assistant::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         case 2: _t->slot_on_serial_timeout(); break;
         case 3: _t->slot_on_packet_timeout(); break;
         case 4: _t->init_signal_and_slot(); break;
+        case 5: _t->on_serial_callback((*reinterpret_cast< Serial_packet(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -133,13 +139,13 @@ int pc_assistant::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 6;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 5)
+        if (_id < 6)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 5;
+        _id -= 6;
     }
     return _id;
 }

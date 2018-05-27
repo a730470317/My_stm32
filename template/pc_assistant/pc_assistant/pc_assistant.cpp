@@ -1,13 +1,17 @@
 #include "pc_assistant.h"
+
+#include <functional>
 using namespace std;
+
+pc_assistant::~pc_assistant()
+{}
+
 pc_assistant::pc_assistant(QWidget *parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
     cout << "Hello" << endl;
     init_signal_and_slot();
-    //m_packet_rec_timer.start(100);
-    //m_serial_rec_timer.start(100);
     init_serial();
 }
 
@@ -21,10 +25,23 @@ void pc_assistant::init_signal_and_slot()
     connect(ui.pushButton_start, SIGNAL(clicked()), this, SLOT(slot_on_click_start()));
 }
 
-pc_assistant::~pc_assistant()
+void pc_assistant::on_serial_callback(Serial_packet packet)
 {
-
-}
+    printf("%s, On rec packet.  \r\n", __FUNCTION__ );
+    //packet.display();
+    switch (packet.id)
+    {
+    case STM32_MCU_STATE_REPORT :
+        MCU_STATE mcu_state;
+        memcpy((void *)&mcu_state, packet.data, sizeof(MCU_STATE));
+        cout << "Adc =  " << mcu_state.m_adc_encoder << " , pos = " << mcu_state.m_motor_pos << endl;
+        break;
+    default: 
+        cout << "Unrecongize packet, " << endl;
+        packet.display();
+        break;
+    }
+};
 
 void pc_assistant::slot_on_click_start()
 {

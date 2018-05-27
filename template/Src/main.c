@@ -89,7 +89,6 @@ int main(void)
 
     SystemClock_Config();
 
-    adc_dma_init();
     MX_GPIO_Init();
     MX_TIM2_Init();
     MX_TIM3_Init();
@@ -98,6 +97,7 @@ int main(void)
     //Encoder_TIM8_Init();
     MX_TIM7_Init();
     exit_encoder_init();
+    adc_dma_init();
     OLED_Init();
     OLED_Clear();
     OLED_ShowString(0, 0, "test~");

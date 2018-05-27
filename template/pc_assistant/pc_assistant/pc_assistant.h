@@ -13,7 +13,7 @@
 #include <serial_service.h>
 
 
-class pc_assistant : public QMainWindow, Serial_service
+class pc_assistant : public QMainWindow, public Serial_service
 {
     Q_OBJECT
 public:
@@ -29,6 +29,8 @@ public:
     void slot_on_packet_timeout();
 
     void init_signal_and_slot();
+    void on_serial_callback(Serial_packet packet);
+
 signals:
     void signal_on_rec_serial_packet(Serial_packet serial_packet);
 private:

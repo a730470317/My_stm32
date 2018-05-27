@@ -20,12 +20,14 @@
 #include <mutex>
 
 #include "../../Src/common/serial_protocal.h"
-#include "color_print.h"
+#include "../../Src/communication_id.h"
 
-#if 1
+
+#if _WIN32
 #include <windows.h>
 #define  SYSTEM_PAUSE system("pause");
 #endif
+#include "color_print.h"
 
 #define SERIAL_SERVICE_VERSION              "Serial_service_v0.1"
 #define SERIAL_SERVICE_DESC                 "The beta version."
@@ -176,6 +178,7 @@ public:
 private:
 };
 
+typedef void(*service_callback)(Serial_packet serial_packet);
 class Serial_service
 {
 public:
@@ -187,11 +190,12 @@ public:
     int             m_rec_frequency = 50;   //rec frequency  = 50hz
     Protocal_to_mcu m_packet_mcu;
 
-signals:
-    void signal_on_rec_serial_packet(Serial_packet serial_packet);
-    void signal_on_rec_serial_packet(void){};
-
 public:
+
+    virtual void on_serial_callback(Serial_packet packet)
+    {
+        cout << "You receive serial packet, but you do not inherit " << __FUNCTION__ << " in  your class, please check this." << endl;
+    };
 
     void init_serial();
 

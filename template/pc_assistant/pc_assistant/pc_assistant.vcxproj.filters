@@ -81,5 +81,8 @@
     <ClInclude Include="color_print.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Src\communication_id.h">
+      <Filter>Source Files\serial</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

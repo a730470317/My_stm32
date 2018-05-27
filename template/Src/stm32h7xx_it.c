@@ -35,6 +35,7 @@ extern char g_printf_char[4][16];
 
 int g_encoder_exti = 0;
 int g_pendulum_angle = 0;
+MCU_STATE g_mcu_state;
 void on_get_packet(char* packet_data, int packet_id, int packet_size);
 void refresh_bai_IO(float bai);
 void refresh_motor_IO(PID_controller * pid);
@@ -161,17 +162,18 @@ void TIM2_IRQHandler(void)
         }
         g_usart1_rx_head_bias = 0;
 #endif
-				float temp_angle = pid_motor_0.m_current_pos;
-        memcpy(str_buffer,(char*)&temp_angle,  sizeof_float);
-        memcpy(str_buffer + sizeof_float, (char*)&g_adc_1_val, sizeof_float);
-        make_packet(str_buffer, g_usart1_tx_buffer, STM32_STATE_REPORT, sizeof_float * 2, &packet_size);
-				//if(nbtime<500)
-				{				
-					HAL_UART_Transmit(&huart1, g_usart1_tx_buffer, packet_size, 1);
-				}
-				printf("Get data cost time %f\r\n", HAL_GetTick() - t_start);
+        float temp_angle = pid_motor_0.m_current_pos;
+        g_mcu_state.m_adc_encoder = g_adc_1_val;
+        g_mcu_state.m_motor_pos = pid_motor_0.m_current_pos;
+        memcpy(str_buffer, (char*)&g_mcu_state, sizeof(MCU_STATE));
+        make_packet(str_buffer, g_usart1_tx_buffer, STM32_MCU_STATE_REPORT, sizeof(MCU_STATE), &packet_size);
+        //if(nbtime<500)
+        {
+            HAL_UART_Transmit(&huart1, g_usart1_tx_buffer, packet_size, 1);
+        }
+        printf("Get data cost time %f\r\n", HAL_GetTick() - t_start);
         printf("Adc interrupt, val2 = %f\r\n", g_adc_1_val);
-				nbtime++;
+        nbtime++;
     }
     else
     {
@@ -295,7 +297,7 @@ void on_get_packet(char* packet_data, int packet_id, int packet_size)
 //Refreshe motor's state and output
 void refresh_motor_IO(PID_controller * pid)
 {
-    pid->m_current_pos = (g_encoder_exti) *360 / pid->m_paulse_per_cir;
+    pid->m_current_pos = (g_encoder_exti)* 360 / pid->m_paulse_per_cir;
     //pid->m_current_pos = (long)(*pid->m_timer_cnt - ENCODE_DEFAULT_BIAS)*360.0 / pid->m_paulse_per_cir;
     //if (enable_PID_control && 5 == index)
     if (pid->m_enable_PID_control)
