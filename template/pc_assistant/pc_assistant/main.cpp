@@ -11,20 +11,17 @@
 
 int main(int argc, char *argv[])
 {
-    int i = 1;
-    int j = 0;
 
     try
     {
+        int i = 1;
+        int j = 0;
         i /= j;
     }
     catch (...)
     {
-        cout << "0除异常" << endl;
+        cout << "除0异常" << endl;
     }
-
-
-
 
     //解决库路径问题============info@seatrix.com
     QTextCodec *xcodec = QTextCodec::codecForLocale();
@@ -39,8 +36,20 @@ int main(int argc, char *argv[])
     //=========================
     QApplication::setStyle(QStyleFactory::create("Fusion"));
     QApplication a(argc, argv);
-   
-    pc_assistant w; 
+
+    pc_assistant w;
     w.show();
+    for (int i = 0; i < 100; i++)
+    {
+        try
+        {
+            a.exec();
+        }
+        catch (...)
+        {
+            a.closeAllWindows();
+            continue;
+        }
+    }
     return a.exec();
 }

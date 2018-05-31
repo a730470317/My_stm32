@@ -191,11 +191,15 @@ public:
     Serial_config   m_serial_config;
     std::thread     m_thread;
     std::thread     *m_thread_ptr=NULL;
-    int             m_rec_frequency = 50;   //rec frequency  = 50hz
+    int             m_rec_frequency = 20;   //rec frequency  = 50hz
     Protocal_to_mcu m_packet_mcu;
     ofstream        m_logger_ofs;
 public:
-
+    Serial_service() = default;
+    ~Serial_service()
+    {
+        delete m_thread_ptr;
+    };
     virtual void on_serial_callback(Serial_packet packet)
     {
         cout << "You receive serial packet, but you do not inherit " << __FUNCTION__ << " in  your class, please check this." << endl;

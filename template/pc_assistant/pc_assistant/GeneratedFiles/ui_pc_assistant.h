@@ -39,7 +39,7 @@ public:
     {
         if (pc_assistantClass->objectName().isEmpty())
             pc_assistantClass->setObjectName(QStringLiteral("pc_assistantClass"));
-        pc_assistantClass->resize(1054, 880);
+        pc_assistantClass->resize(253, 221);
         centralWidget = new QWidget(pc_assistantClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);

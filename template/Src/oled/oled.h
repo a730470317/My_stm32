@@ -77,8 +77,8 @@ typedef uint8_t  	u8;
 //RES  ½ÓPG13
 //DC   ½ÓPG11
 //CS   ½ÓPD9    
-#define OLED_CS_Clr()   HAL_GPIO_WritePin(GPIOD,GPIO_PIN_9,GPIO_PIN_RESET)//CS
-#define OLED_CS_Set()   HAL_GPIO_WritePin(GPIOD,GPIO_PIN_9,GPIO_PIN_SET)//CS
+#define OLED_CS_Clr()   //HAL_GPIO_WritePin(GPIOD,GPIO_PIN_9,GPIO_PIN_RESET)//CS
+#define OLED_CS_Set()   //HAL_GPIO_WritePin(GPIOD,GPIO_PIN_9,GPIO_PIN_SET)//CS
 
 #define OLED_RST_Clr()  HAL_GPIO_WritePin(GPIOG,GPIO_PIN_13,GPIO_PIN_RESET)//RES
 #define OLED_RST_Set()  HAL_GPIO_WritePin(GPIOG,GPIO_PIN_13,GPIO_PIN_SET)

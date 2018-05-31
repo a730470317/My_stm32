@@ -69,13 +69,12 @@ void Serial_service::init_serial()
     m_serial.clear(QSerialPort::Direction::AllDirections);
     m_serial.setReadBufferSize(100000);
 
-
     if (!m_logger_ofs.is_open())
     {
         std::string file_name;
         file_name = string("./serial_log_") 
-            + string(QDate::currentDate().toString(Qt::ISODate).toStdString()) + "_"
-            + string(QTime::currentTime().toString(Qt::ISODate).toStdString())
+            + string(QDate::currentDate().toString(Qt::ISODate).toStdString()) 
+            //+ "_" + string(QTime::currentTime().toString(Qt::ISODate).toStdString())
             + string(".log");
 
         while (file_name.find(":") != string::npos)
@@ -85,7 +84,9 @@ void Serial_service::init_serial()
             file_name.replace(file_name.find("-"), 1, "_");
         
         //cout << "Logger file name : " << file_name << endl;
-        m_logger_ofs.open(file_name.c_str());
+        m_logger_ofs.open(file_name.c_str(),std::ios_base::app);
+        m_logger_ofs << "==========================" << endl;
+        m_logger_ofs << "Start application @ " << string(QTime::currentTime().toString(Qt::ISODate).toStdString()) << endl;
     }
 
     if (m_serial.isOpen())
@@ -139,11 +140,11 @@ void Serial_service::service()
 
                 //if (m_serial.isDataTerminalReady() && m_serial.isReadable())
                 //if ( m_serial.waitForReadyRead(1) )
-                if (m_serial.isReadable())
+                if (1)
                 {
                     serial_data = m_serial.readAll();
-                    //serial_data = m_serial.read(100);
                     m_serial.clear();
+                    //serial_data = m_serial.read(100);
                     //m_serial.close();
                     //m_serial.open(QIODevice::ReadWrite);
                 }
