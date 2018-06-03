@@ -82,6 +82,9 @@ void pc_assistant::slot_on_refresh_mcu_state(MCU_STATE * mcu_state)
     char show_text[1024];
     sprintf(show_text, " Adc_val = %.2f\r\n Pendulum pos = %.2f\r\n", mcu_state->m_adc_encoder_val,mcu_state->m_pendulum_pos);
     ui.label_message->setText(show_text);
+    ui.lcdNumber_adc_val->display(mcu_state->m_adc_encoder_val);
+    ui.lcdNumber_pendulum_pos->display(mcu_state->m_pendulum_pos);
+    ui.dial_pedulum_pos->setValue((int)(mcu_state->m_pendulum_pos) % 360);
     ui.dial_circle->repaint();
     ui_busy = 0;
 }
