@@ -24,13 +24,19 @@
 
 #include "../../Src/common/serial_protocal.h"
 #include "../../Src/communication_id.h"
+#include "color_print.h"
 
 
-#if _WIN32
+#ifdef _WIN32
+#define USING_WIN_SERIAL 1
+#include "win_serial.h"
 #include <windows.h>
 #define  SYSTEM_PAUSE system("pause");
+class Win_serial_port;
+#else
+#define USING_WIN_SERIAL 0
 #endif
-#include "color_print.h"
+
 
 #define SERIAL_SERVICE_VERSION              "Serial_service_v0.1"
 #define SERIAL_SERVICE_DESC                 "The beta version."
@@ -39,8 +45,9 @@
 
 using namespace std;
 //using namespace Qt;
-struct Serial_config
+class Serial_config
 {
+public:
     string m_com_name;
     int    m_buad_rate;
 
@@ -187,11 +194,14 @@ class Serial_service
 public:
     std::mutex      m_mutex_serial_mutex;
     QSerialPort     m_serial;
+#if _WIN32
+    Win_serial_port *m_win_serial;
+#endif
     std::string     m_serial_name;
     Serial_config   m_serial_config;
     std::thread     m_thread;
     std::thread     *m_thread_ptr=NULL;
-    int             m_rec_frequency = 30;   //rec frequency  = 50hz
+    int             m_rec_frequency = 100;   //rec frequency  = 50hz
     Protocal_to_mcu m_packet_mcu;
     ofstream        m_logger_ofs;
 public:

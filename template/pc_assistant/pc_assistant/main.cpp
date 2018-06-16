@@ -5,13 +5,12 @@
 #include "qfileinfo.h"
 
 #include <functional>
+#include <stdio.h>
 #include <iostream>
 #include <string>
 
-
 int main(int argc, char *argv[])
 {
-
     try
     {
         int i = 1;
@@ -39,17 +38,17 @@ int main(int argc, char *argv[])
 
     pc_assistant w;
     w.show();
-    for (int i = 0; i < 100; i++)
-    {
-        try
-        {
-            a.exec();
-        }
-        catch (...)
-        {
-            a.closeAllWindows();
-            continue;
-        }
-    }
+    //for (int i = 0; i < 100; i++)
+    //{
+    //    try
+    //    {
+    //        a.exec();
+    //    }
+    //    catch (...)
+    //    {
+    //        a.closeAllWindows();
+    //        continue;
+    //    }
+    //}
     return a.exec();
 }

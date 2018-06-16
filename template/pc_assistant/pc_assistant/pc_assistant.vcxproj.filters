@@ -56,6 +56,9 @@
     <ClCompile Include="serial_service.cpp">
       <Filter>Source Files\serial</Filter>
     </ClCompile>
+    <ClCompile Include="win_serial.cpp">
+      <Filter>Source Files\serial</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="pc_assistant.h">
@@ -82,6 +85,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Src\communication_id.h">
+      <Filter>Source Files\serial</Filter>
+    </ClInclude>
+    <ClInclude Include="win_serial.h">
       <Filter>Source Files\serial</Filter>
     </ClInclude>
   </ItemGroup>

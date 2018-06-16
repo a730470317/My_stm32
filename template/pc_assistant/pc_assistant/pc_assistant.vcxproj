@@ -156,6 +156,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pc_assistant.cpp" />
     <ClCompile Include="serial_service.cpp" />
+    <ClCompile Include="win_serial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="pc_assistant.h">
@@ -204,6 +205,7 @@
     <ClInclude Include="GeneratedFiles\ui_pc_assistant.h" />
     <ClInclude Include="import_lib.h" />
     <ClInclude Include="serial_service.h" />
+    <ClInclude Include="win_serial.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
