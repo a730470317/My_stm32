@@ -13,6 +13,7 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QDial>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
@@ -21,6 +22,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSlider>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
@@ -33,7 +35,7 @@ public:
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     QHBoxLayout *horizontalLayout_2;
-    QVBoxLayout *verticalLayout_2;
+    QVBoxLayout *verticalLayout_4;
     QLabel *label_message;
     QHBoxLayout *horizontalLayout;
     QDial *dial_circle;
@@ -43,6 +45,11 @@ public:
     QLabel *label_2;
     QLCDNumber *lcdNumber_pendulum_pos;
     QDial *dial_pedulum_pos;
+    QVBoxLayout *verticalLayout_2;
+    QLabel *label_pwm;
+    QSlider *slider_pwm;
+    QCheckBox *checkBox_manual;
+    QSpacerItem *verticalSpacer_2;
     QVBoxLayout *verticalLayout_3;
     QPushButton *pushButton_start;
     QSpacerItem *verticalSpacer;
@@ -52,7 +59,7 @@ public:
     {
         if (pc_assistantClass->objectName().isEmpty())
             pc_assistantClass->setObjectName(QStringLiteral("pc_assistantClass"));
-        pc_assistantClass->resize(1336, 802);
+        pc_assistantClass->resize(1530, 1001);
         centralWidget = new QWidget(pc_assistantClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -62,10 +69,9 @@ public:
         horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setSpacing(6);
         horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
-        verticalLayout_2 = new QVBoxLayout();
-        verticalLayout_2->setSpacing(6);
-        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
-        verticalLayout_2->setSizeConstraint(QLayout::SetMinimumSize);
+        verticalLayout_4 = new QVBoxLayout();
+        verticalLayout_4->setSpacing(6);
+        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
         label_message = new QLabel(centralWidget);
         label_message->setObjectName(QStringLiteral("label_message"));
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
@@ -79,7 +85,7 @@ public:
         font.setWeight(75);
         label_message->setFont(font);
 
-        verticalLayout_2->addWidget(label_message);
+        verticalLayout_4->addWidget(label_message);
 
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(6);
@@ -176,13 +182,53 @@ public:
 
         horizontalLayout->addLayout(verticalLayout);
 
+        verticalLayout_2 = new QVBoxLayout();
+        verticalLayout_2->setSpacing(6);
+        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
+        label_pwm = new QLabel(centralWidget);
+        label_pwm->setObjectName(QStringLiteral("label_pwm"));
+        label_pwm->setFont(font);
+        label_pwm->setAlignment(Qt::AlignCenter);
+
+        verticalLayout_2->addWidget(label_pwm);
+
+        slider_pwm = new QSlider(centralWidget);
+        slider_pwm->setObjectName(QStringLiteral("slider_pwm"));
+        QSizePolicy sizePolicy4(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(slider_pwm->sizePolicy().hasHeightForWidth());
+        slider_pwm->setSizePolicy(sizePolicy4);
+        slider_pwm->setMinimum(-99);
+        slider_pwm->setOrientation(Qt::Horizontal);
+
+        verticalLayout_2->addWidget(slider_pwm);
+
+        checkBox_manual = new QCheckBox(centralWidget);
+        checkBox_manual->setObjectName(QStringLiteral("checkBox_manual"));
+        QFont font3;
+        font3.setPointSize(14);
+        font3.setBold(true);
+        font3.setWeight(75);
+        checkBox_manual->setFont(font3);
+
+        verticalLayout_2->addWidget(checkBox_manual);
+
+        verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_2->addItem(verticalSpacer_2);
+
+
+        horizontalLayout->addLayout(verticalLayout_2);
+
         horizontalLayout->setStretch(0, 2);
         horizontalLayout->setStretch(1, 1);
+        horizontalLayout->setStretch(2, 1);
 
-        verticalLayout_2->addLayout(horizontalLayout);
+        verticalLayout_4->addLayout(horizontalLayout);
 
 
-        horizontalLayout_2->addLayout(verticalLayout_2);
+        horizontalLayout_2->addLayout(verticalLayout_4);
 
         verticalLayout_3 = new QVBoxLayout();
         verticalLayout_3->setSpacing(6);
@@ -190,15 +236,11 @@ public:
         verticalLayout_3->setSizeConstraint(QLayout::SetMaximumSize);
         pushButton_start = new QPushButton(centralWidget);
         pushButton_start->setObjectName(QStringLiteral("pushButton_start"));
-        QSizePolicy sizePolicy4(QSizePolicy::Maximum, QSizePolicy::Fixed);
-        sizePolicy4.setHorizontalStretch(0);
-        sizePolicy4.setVerticalStretch(0);
-        sizePolicy4.setHeightForWidth(pushButton_start->sizePolicy().hasHeightForWidth());
-        pushButton_start->setSizePolicy(sizePolicy4);
-        QFont font3;
-        font3.setPointSize(14);
-        font3.setBold(true);
-        font3.setWeight(75);
+        QSizePolicy sizePolicy5(QSizePolicy::Maximum, QSizePolicy::Fixed);
+        sizePolicy5.setHorizontalStretch(0);
+        sizePolicy5.setVerticalStretch(0);
+        sizePolicy5.setHeightForWidth(pushButton_start->sizePolicy().hasHeightForWidth());
+        pushButton_start->setSizePolicy(sizePolicy5);
         pushButton_start->setFont(font3);
 
         verticalLayout_3->addWidget(pushButton_start);
@@ -209,8 +251,8 @@ public:
 
         pushButton_exit = new QPushButton(centralWidget);
         pushButton_exit->setObjectName(QStringLiteral("pushButton_exit"));
-        sizePolicy4.setHeightForWidth(pushButton_exit->sizePolicy().hasHeightForWidth());
-        pushButton_exit->setSizePolicy(sizePolicy4);
+        sizePolicy5.setHeightForWidth(pushButton_exit->sizePolicy().hasHeightForWidth());
+        pushButton_exit->setSizePolicy(sizePolicy5);
         pushButton_exit->setFont(font3);
 
         verticalLayout_3->addWidget(pushButton_exit);
@@ -235,6 +277,8 @@ public:
         label_message->setText(QApplication::translate("pc_assistantClass", "The is message", 0));
         label->setText(QApplication::translate("pc_assistantClass", "ADC_val:", 0));
         label_2->setText(QApplication::translate("pc_assistantClass", "Pendulum pos(angle):", 0));
+        label_pwm->setText(QApplication::translate("pc_assistantClass", "PWM", 0));
+        checkBox_manual->setText(QApplication::translate("pc_assistantClass", "Manual", 0));
         pushButton_start->setText(QApplication::translate("pc_assistantClass", "Start", 0));
         pushButton_exit->setText(QApplication::translate("pc_assistantClass", "Exit", 0));
     } // retranslateUi

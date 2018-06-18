@@ -34,15 +34,41 @@ void pc_assistant::init_signal_and_slot()
     connect(&m_serial_rec_timer, SIGNAL(timeout()), this, SLOT(slot_on_serial_timeout()));
     connect(&m_packet_rec_timer, SIGNAL(timeout()), this, SLOT(slot_on_packet_timeout()));
 
+    connect(ui.slider_pwm, SIGNAL(sliderMoved(int)), this, SLOT(slot_on_slider_pwm_changed()));
 
+}
 
+void pc_assistant::slot_on_slider_pwm_changed()
+{
+    Motor_control motor_ctrl;
+    m_serial_packet.id = STM32_MCU_SET_PWM;
+    m_serial_packet.direction = Serial_packet::e_direction_out;
+    char text_char[100];
+    sprintf(text_char, "PWM %03d", (int)ui.slider_pwm->value());
+    ui.label_pwm->setText(QString(text_char));
+
+    motor_ctrl.if_manaul = 0;
+    motor_ctrl.pwm_val[0] = ui.slider_pwm->value();
+    motor_ctrl.pwm_val[1] = 0;
+
+    if (ui.checkBox_manual->isChecked())
+    {
+        cout << "Slider values = " << ui.slider_pwm->value() << endl;
+        motor_ctrl.if_manaul = 1;
+        
+    }
+    memcpy(m_serial_packet.data, &(motor_ctrl), sizeof(Motor_control));
+    m_serial_packet.data_length = sizeof(Motor_control);
+    m_serial_packet.display();
+    emit signal_on_send_serial_packet(&m_serial_packet);
 }
 
 void pc_assistant::on_serial_callback(Serial_packet packet)
 {
-    printf("%s, On rec packet.  \r\n", __FUNCTION__);
+    //printf("%s, On rec packet.  \r\n", __FUNCTION__);
 
     //packet.display();
+    CONSOLE_SET_TEXT_YELLOW;
     switch (packet.id)
     {
     case STM32_MCU_STATE_REPORT:
@@ -56,10 +82,17 @@ void pc_assistant::on_serial_callback(Serial_packet packet)
         packet.display();
         break;
     }
+    CONSOLE_RESET_DEFAULT;
+    packet.id = 255 - packet.id;
+    ////send_packet(packet);
+    emit signal_on_send_serial_packet(&packet);
 
-    //packet.id = 255 - packet.id;
-    //send_packet(packet);
-    //emit signal_on_send_serial_packet(&packet);
+    //char data[5];
+    //for (int i = 0; i < 5; i++)
+    //{
+    //    data[i] = i;
+    //}
+    //m_win_serial->writeSerialPort(data, 5);
 };
 
 void pc_assistant::slot_on_send_serial_packet(Serial_packet *packet)

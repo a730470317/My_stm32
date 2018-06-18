@@ -300,6 +300,16 @@ void on_get_packet(char* packet_data, int packet_id, int packet_size)
     {
         printf("data = %d\n", packet_data[0]);
     }
+    else if (packet_id == STM32_MCU_SET_PWM)
+    {
+        //printf("set pwm ", packet_data[0]);
+        Motor_control motor_ctrl;
+        memcpy(&motor_ctrl, packet_data, sizeof(Motor_control));
+        if (motor_ctrl.if_manaul)
+        {
+            printf("Set pwm = %\r\n", motor_ctrl.pwm_val[0]);
+        }
+    }
 }
 
 

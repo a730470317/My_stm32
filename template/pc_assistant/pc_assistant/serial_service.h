@@ -138,17 +138,20 @@ struct Serial_packet
     int id;
     Serial_direction direction;
 
-    char *data;
+    char data[1024];
 
     Serial_packet()
     {
-        data = new char[1024];
+        //data = new char[1024];
         data_length = 0;
         packet_length = 0;
         id = 0;
         direction = e_direction_unset;
     }
-
+    ~Serial_packet()
+    {
+        //delete data;
+    }
     void display()
     {
         CONSOLE_SET_STYLE(CONSOLE_COLOR_YELLOW, CONSOLE_COLOR_BLACK);
@@ -158,7 +161,7 @@ struct Serial_packet
         case e_direction_in : printf("==> "); break;
         case e_direction_out: printf("<== "); break;
         };
-        printf("[%d] ", id);
+        printf("id=%d, size=%d, ", id, data_length);
         for (int i = 0; i < data_length; i++)
         {
             printf("%d, ", data[i]);
@@ -166,6 +169,7 @@ struct Serial_packet
         printf("\r\n");
         CONSOLE_RESET_DEFAULT;
     }
+
 };
 
 class Protocal_to_mcu
@@ -177,9 +181,13 @@ public:
     int m_current_rec_index = 0;;
     std::mutex m_mutex;
     QSerialPort * m_serial;
+#if _WIN32
+    Win_serial_port *m_win_serial;
+    void init(Win_serial_port *serial);
+#endif
     Protocal_to_mcu();
     ~Protocal_to_mcu();
-
+    void display(int count,int direction=1 ); // direction =1 out, =0 in;
     void init(QSerialPort * serial);
     void send_packet(Serial_packet & packet);
     void receive_packet(Serial_packet packet);
@@ -189,6 +197,7 @@ private:
 };
 
 typedef void(*service_callback)(Serial_packet serial_packet);
+
 class Serial_service
 {
 public:

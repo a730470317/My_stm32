@@ -17,6 +17,22 @@ void Protocal_to_mcu::init(QSerialPort * serial)
     m_serial = serial;
 }
 
+void Protocal_to_mcu::display(int count,int direction)
+{
+    cout << __FUNCTION__ << "  ";
+    for (int i = 0; i < count; i++)
+    {
+        if (direction == 1)
+        {
+            printf("%x, ", m_send_buffer[i]);
+        }
+        else
+        {
+            printf("%x, ", m_rec_buffer[i]);
+        }
+    }
+}
+
 void Protocal_to_mcu::send_packet(Serial_packet & packet)
 {
     m_busy = 1;
@@ -35,7 +51,6 @@ void Protocal_to_mcu::send_packet(Serial_packet & packet)
     {
         m_serial->putChar(m_send_buffer[i]);
     }
-
     m_serial->flush();
     m_serial->waitForBytesWritten(1);
     m_busy = 0;
@@ -133,8 +148,11 @@ void Serial_service::send_packet(Serial_packet packet)
     }
     else if (m_win_serial->m_is_connected)
     {
+        packet.display();
+        m_packet_mcu.display(packet.packet_length);
         m_win_serial->writeSerialPort(m_packet_mcu.m_send_buffer, packet.packet_length);
     }
+    packet.display();
 }
 
 void Serial_service::service()
@@ -183,7 +201,7 @@ void Serial_service::service()
                 }
                 if (onRec(serial_data[i], m_packet_mcu.m_rec_buffer, &m_packet_mcu.m_current_rec_index, &packet.id, &packet.data_length, packet.data))
                 {
-                    cout << "Serial size = " << serial_data.size() << endl;
+                    //cout << "Serial size = " << serial_data.size() << endl;
                     get_data = 1;
                     rec_buffer_count++;
                     on_serial_callback(packet);

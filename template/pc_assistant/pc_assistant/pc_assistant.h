@@ -24,6 +24,7 @@ public:
     pc_assistant(QWidget *parent = 0);
     ~pc_assistant();
 
+    Serial_packet m_serial_packet;
     signals:
 
     void signal_on_refresh_mcu_state(MCU_STATE * mcu_state);
@@ -37,7 +38,7 @@ public:
 
     void slot_on_refresh_mcu_state(MCU_STATE *serial_packet);
     void slot_on_send_serial_packet(Serial_packet *packet);
-
+    void slot_on_slider_pwm_changed();
 public:
     void init_signal_and_slot();
     void on_serial_callback(Serial_packet packet);

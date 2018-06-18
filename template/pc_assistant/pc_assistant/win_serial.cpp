@@ -12,7 +12,7 @@ Win_serial_port::Win_serial_port()
     dcbSerialParameters.BaudRate = 2000000;
     dcbSerialParameters.ByteSize = 8;
     dcbSerialParameters.StopBits = ONESTOPBIT;
-    dcbSerialParameters.Parity = NOPARITY;
+    dcbSerialParameters.Parity = ODDPARITY;
     dcbSerialParameters.fDtrControl = DTR_CONTROL_DISABLE;
 }
 
@@ -56,7 +56,14 @@ void Win_serial_port::init(const char *portName)
         }
         else 
         {
-            
+            COMMTIMEOUTS CommTimeOuts;
+            CommTimeOuts.ReadIntervalTimeout = 10;
+            CommTimeOuts.ReadTotalTimeoutMultiplier = 0;
+            CommTimeOuts.ReadTotalTimeoutConstant = 0;
+            CommTimeOuts.WriteTotalTimeoutMultiplier = 0;
+            CommTimeOuts.WriteTotalTimeoutConstant = 5000;
+            SetCommTimeouts(m_comm, &CommTimeOuts);
+
             if (!SetCommState(m_comm, &dcbSerialParameters))
             {
                 printf("ALERT: could not set Serial port parameters\n");
@@ -66,14 +73,6 @@ void Win_serial_port::init(const char *portName)
                 PurgeComm(this->m_comm, PURGE_RXCLEAR | PURGE_TXCLEAR);
                 Sleep(ARDUINO_WAIT_TIME);
             }
-
-            _COMMTIMEOUTS time_out;
-            time_out.ReadIntervalTimeout = 10;
-            time_out.ReadTotalTimeoutMultiplier = 10;
-            time_out.ReadTotalTimeoutConstant = 10;
-            time_out.WriteTotalTimeoutMultiplier = 10;
-            time_out.WriteTotalTimeoutConstant = 10;
-            SetCommTimeouts(m_comm, &time_out);
         }
         clear_buffer();
     }
