@@ -46,99 +46,12 @@ extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim15;
 extern UART_HandleTypeDef huart1;
 
-/**
-  * @brief   This function handles NMI exception.
-  * @param  None
-  * @retval None
-  */
-void NMI_Handler(void)
-{
-}
-
-/**
-  * @brief  This function handles Hard Fault exception.
-  * @param  None
-  * @retval None
-  */
-void HardFault_Handler(void)
-{
-    /* Go to infinite loop when Hard Fault exception occurs */
-    while (1)
-    {
-    }
-}
-
-/**
-  * @brief  This function handles Memory Manage exception.
-  * @param  None
-  * @retval None
-  */
-void MemManage_Handler(void)
-{
-    /* Go to infinite loop when Memory Manage exception occurs */
-    while (1)
-    {
-    }
-}
-
-/**
-  * @brief  This function handles Bus Fault exception.
-  * @param  None
-  * @retval None
-  */
-void BusFault_Handler(void)
-{
-    /* Go to infinite loop when Bus Fault exception occurs */
-    while (1)
-    {
-    }
-}
-
-/**
-  * @brief  This function handles Usage Fault exception.
-  * @param  None
-  * @retval None
-  */
-void UsageFault_Handler(void)
-{
-    /* Go to infinite loop when Usage Fault exception occurs */
-    while (1)
-    {
-    }
-}
-
-/**
-  * @brief  This function handles SVCall exception.
-  * @param  None
-  * @retval None
-  */
-void SVC_Handler(void)
-{
-}
-
-/**
-  * @brief  This function handles Debug Monitor exception.
-  * @param  None
-  * @retval None
-  */
-void DebugMon_Handler(void)
-{
-}
-
-void PendSV_Handler(void)
-{
-}
-
 void SysTick_Handler(void)
 {
     HAL_IncTick();
 
 }
 
-
-/**
-* @brief This function handles TIM2 global interrupt.
-*/
 void TIM2_IRQHandler(void)
 {
     /* USER CODE BEGIN TIM2_IRQn 0 */
@@ -189,9 +102,6 @@ void TIM2_IRQHandler(void)
     /* USER CODE END TIM2_IRQn 1 */
 }
 
-/**
-* @brief This function handles USART1 global interrupt.
-*/
 void USART1_IRQHandler(void)
 {
     /* USER CODE BEGIN USART1_IRQn 0 */
@@ -229,9 +139,6 @@ void USART1_IRQHandler(void)
     /* USER CODE END USART1_IRQn 1 */
 }
 
-/**
-* @brief This function handles TIM7 global interrupt.
-*/
 void TIM7_IRQHandler(void)
 {
     /* USER CODE BEGIN TIM7_IRQn 0 */
@@ -355,5 +262,3 @@ void refresh_bai_IO(float bai)
     sprintf(g_printf_char[2], "%.2f,", x_abs);
     pid_motor_0.m_target_pos = (motor_pos - x_abs);
 }
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
