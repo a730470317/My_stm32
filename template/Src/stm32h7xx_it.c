@@ -14,6 +14,11 @@
   * @{
   */
 
+
+#define Control_IRQHandler      TIM7_IRQHandler
+#define Encoder_exti_IRQHandler EXTI9_5_IRQHandler
+#define Servece_IRQHandler      TIM2_IRQHandler
+
 //#define TEST_REC
 extern char g_usart1_tx_buffer[USART_RX_SIZE];
 extern char g_usart1_rx_buffer[USART_RX_SIZE];
@@ -46,7 +51,6 @@ extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim15;
 extern UART_HandleTypeDef huart1;
-
 /**
   * @brief   This function handles NMI exception.
   * @param  None
@@ -140,10 +144,10 @@ void SysTick_Handler(void)
 /**
 * @brief This function handles TIM2 global interrupt.
 */
-void TIM2_IRQHandler(void)
+void Servece_IRQHandler(void)
 {
     /* USER CODE BEGIN TIM2_IRQn 0 */
-    static int nbtime = 0;
+    static int usart_send_time = 0;
     int t_start = HAL_GetTick();
     static char str_buffer[100];
     static int sizeof_float = sizeof(float);
@@ -155,18 +159,6 @@ void TIM2_IRQHandler(void)
     BLUE_LED_ON;
     if (1)
     {
-#ifdef TEST_REC
-        while (send_idx < g_usart1_rx_head_bias)
-        {
-            HAL_UART_Transmit(&huart1, (uint8_t *)&g_usart1_rx_buffer[send_idx], 1, 1);
-            send_idx++;
-        }
-        g_usart1_rx_head_bias = 0;
-#endif
-        g_mcu_state.m_adc_encoder_val = g_adc_1_val;
-        g_mcu_state.m_pendulum_pos = g_pendulum_angle;
-        g_mcu_state.m_motor_pos = pid_motor_0.m_current_pos;
-        
         memcpy(str_buffer, (char*)&g_mcu_state, sizeof(MCU_STATE));
         make_packet(str_buffer, g_usart1_tx_buffer, STM32_MCU_STATE_REPORT, sizeof(MCU_STATE), &packet_size);
         //if(nbtime<500)
@@ -175,7 +167,7 @@ void TIM2_IRQHandler(void)
         }
         printf("Get data cost time %f\r\n", HAL_GetTick() - t_start);
         printf("Adc interrupt, val2 = %f\r\n", g_adc_1_val);
-        nbtime++;
+        usart_send_time++;
     }
     else
     {
@@ -202,20 +194,13 @@ void USART1_IRQHandler(void)
     char packet_data[100];
     int packet_size = 0;
     int packet_id = 0;
-#ifdef TEST_REC
-    g_usart1_rx_buffer[g_usart1_rx_head_bias] = g_usart1_rec_char;
-    g_usart1_rx_head_bias++;
-    if (g_usart1_rx_head_bias > USART_RX_SIZE - 1)
-        g_usart1_rx_head_bias = USART_RX_SIZE - 1;
-#endif
+
     if (onRec(g_usart1_rec_char, g_usart1_rx_buffer, &current_index, &packet_id, &packet_size, packet_data))
     {
         RED_LED_ON;
         current_index = 0;
         on_get_packet(packet_data, packet_id, packet_size);
-        //HAL_Delay(1);
         RED_LED_OFF;
-        //HAL_Delay(1);
     }
     if (current_index >= USART_RX_SIZE)
     {
@@ -250,23 +235,27 @@ void refresh_pendulum_state()
     g_pendulum_angle = g_adc_1_val*360.0 / 3.3;
     g_pendulum_angle -= (g_adc_bias*360.0 / 3.3);
     /*Pendulum state update*/
+    
+    g_mcu_state.m_adc_encoder_val = g_adc_1_val;
+    g_mcu_state.m_pendulum_pos = g_pendulum_angle;
 }
 
 /**
 * @brief This function handles TIM7 global interrupt.
 */
-void TIM7_IRQHandler(void)
+void Control_IRQHandler(void)
 {
     /* USER CODE BEGIN TIM7_IRQn 0 */
     GREEN_LED_ON
     HAL_TIM_IRQHandler(&htim7);
     refresh_pendulum_state();
-    
-    
+
     sprintf(g_printf_char[0], "a=%.2fV , e=%d", g_adc_1_val, (int)g_pendulum_angle);
     //refresh_bai_IO(angle);
     refresh_motor_IO(&pid_motor_0);
     sprintf(g_printf_char[1], "pos= %.2f", pid_motor_0.m_current_pos);
+
+    g_mcu_state.m_motor_pos = pid_motor_0.m_current_pos;
     GREEN_LED_OFF
     /* USER CODE END TIM7_IRQn 1 */
 }
@@ -276,7 +265,9 @@ void TIM15_IRQHandler(void)
     HAL_TIM_IRQHandler(&htim15);
 }
 
-void EXTI9_5_IRQHandler(void)
+
+
+void Encoder_exti_IRQHandler(void)
 {
     /* USER CODE BEGIN EXTI9_5_IRQn 0 */
 
