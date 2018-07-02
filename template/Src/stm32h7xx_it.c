@@ -51,99 +51,25 @@ extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim15;
 extern UART_HandleTypeDef huart1;
-/**
-  * @brief   This function handles NMI exception.
-  * @param  None
-  * @retval None
-  */
-void NMI_Handler(void)
-{
-}
-
-/**
-  * @brief  This function handles Hard Fault exception.
-  * @param  None
-  * @retval None
-  */
-void HardFault_Handler(void)
-{
-    /* Go to infinite loop when Hard Fault exception occurs */
-    while (1)
-    {
-    }
-}
-
-/**
-  * @brief  This function handles Memory Manage exception.
-  * @param  None
-  * @retval None
-  */
-void MemManage_Handler(void)
-{
-    /* Go to infinite loop when Memory Manage exception occurs */
-    while (1)
-    {
-    }
-}
-
-/**
-  * @brief  This function handles Bus Fault exception.
-  * @param  None
-  * @retval None
-  */
-void BusFault_Handler(void)
-{
-    /* Go to infinite loop when Bus Fault exception occurs */
-    while (1)
-    {
-    }
-}
-
-/**
-  * @brief  This function handles Usage Fault exception.
-  * @param  None
-  * @retval None
-  */
-void UsageFault_Handler(void)
-{
-    /* Go to infinite loop when Usage Fault exception occurs */
-    while (1)
-    {
-    }
-}
-
-/**
-  * @brief  This function handles SVCall exception.
-  * @param  None
-  * @retval None
-  */
-void SVC_Handler(void)
-{
-}
-
-/**
-  * @brief  This function handles Debug Monitor exception.
-  * @param  None
-  * @retval None
-  */
-void DebugMon_Handler(void)
-{
-}
-
-void PendSV_Handler(void)
-{
-}
-
-void SysTick_Handler(void)
-{
-    HAL_IncTick();
-
-}
-
 
 /**
 * @brief This function handles TIM2 global interrupt.
 */
+
+void set_timer_ccr_output(TIM_TypeDef * timer, int val)
+{
+    if (val > 0)
+    {
+        timer->CCR1 = abs(val);
+        timer->CCR2 = 0;
+    }
+    else
+    {
+        timer->CCR2 = abs(val);
+        timer->CCR1 = 0;
+    }
+}
+
 void Servece_IRQHandler(void)
 {
     /* USER CODE BEGIN TIM2_IRQn 0 */
@@ -190,7 +116,7 @@ void USART1_IRQHandler(void)
     /* USER CODE BEGIN USART1_IRQn 0 */
     BLUE_LED_ON;
     static int current_index = 0;
-    g_usart1_rec_char = (uint16_t)(USART1->RDR & (uint16_t)0x01FF);
+    g_usart1_rec_char = (uint16_t)(USART1->RDR & (uint16_t)0x00FF);
     char packet_data[100];
     int packet_size = 0;
     int packet_id = 0;
@@ -235,7 +161,7 @@ void refresh_pendulum_state()
     g_pendulum_angle = g_adc_1_val*360.0 / 3.3;
     g_pendulum_angle -= (g_adc_bias*360.0 / 3.3);
     /*Pendulum state update*/
-    
+
     g_mcu_state.m_adc_encoder_val = g_adc_1_val;
     g_mcu_state.m_pendulum_pos = g_pendulum_angle;
 }
@@ -247,7 +173,7 @@ void Control_IRQHandler(void)
 {
     /* USER CODE BEGIN TIM7_IRQn 0 */
     GREEN_LED_ON
-    HAL_TIM_IRQHandler(&htim7);
+        HAL_TIM_IRQHandler(&htim7);
     refresh_pendulum_state();
 
     sprintf(g_printf_char[0], "a=%.2fV , e=%d", g_adc_1_val, (int)g_pendulum_angle);
@@ -257,7 +183,7 @@ void Control_IRQHandler(void)
 
     g_mcu_state.m_motor_pos = pid_motor_0.m_current_pos;
     GREEN_LED_OFF
-    /* USER CODE END TIM7_IRQn 1 */
+        /* USER CODE END TIM7_IRQn 1 */
 }
 
 void TIM15_IRQHandler(void)
@@ -303,8 +229,9 @@ void on_get_packet(char* packet_data, int packet_id, int packet_size)
         memcpy(&serial_motor_ctrl, packet_data, sizeof(Motor_control));
         if (serial_motor_ctrl.if_manaul)
         {
+            set_timer_ccr_output(pid_motor_0.m_pwm_output_timer, serial_motor_ctrl.pwm_val[0]);
             printf("Set pwm = %\r\n", serial_motor_ctrl.pwm_val[0]);
-            sprintf(g_printf_char[2],"pwm = %d", serial_motor_ctrl.pwm_val[0]);
+            sprintf(g_printf_char[2], "pwm = %d", serial_motor_ctrl.pwm_val[0]);
         }
     }
 }
@@ -324,16 +251,9 @@ void refresh_motor_IO(PID_controller * pid)
     {
         pid->m_output = 0;
     }
-    
-    if (pid->m_output > 0)
-    {
-        pid->m_pwm_output_timer->CCR1 = abs(pid->m_output);
-        pid->m_pwm_output_timer->CCR2 = 0;
-    }
     else
     {
-        pid->m_pwm_output_timer->CCR2 = abs(pid->m_output);
-        pid->m_pwm_output_timer->CCR1 = 0;
+        set_timer_ccr_output(pid->m_pwm_output_timer, pid->m_output);
     }
     //*(pid->m_pwm_output) = (long)fabs((pid->m_output));
 }
@@ -354,4 +274,90 @@ void refresh_bai_IO(float bai)
     pid_motor_0.m_target_pos = (motor_pos - x_abs);
 }
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+/**
+* @brief   This function handles NMI exception.
+* @param  None
+* @retval None
+*/
+void NMI_Handler(void)
+{
+}
+
+/**
+* @brief  This function handles Hard Fault exception.
+* @param  None
+* @retval None
+*/
+void HardFault_Handler(void)
+{
+    /* Go to infinite loop when Hard Fault exception occurs */
+    while (1)
+    {
+    }
+}
+
+/**
+* @brief  This function handles Memory Manage exception.
+* @param  None
+* @retval None
+*/
+void MemManage_Handler(void)
+{
+    /* Go to infinite loop when Memory Manage exception occurs */
+    while (1)
+    {
+    }
+}
+
+/**
+* @brief  This function handles Bus Fault exception.
+* @param  None
+* @retval None
+*/
+void BusFault_Handler(void)
+{
+    /* Go to infinite loop when Bus Fault exception occurs */
+    while (1)
+    {
+    }
+}
+
+/**
+* @brief  This function handles Usage Fault exception.
+* @param  None
+* @retval None
+*/
+void UsageFault_Handler(void)
+{
+    /* Go to infinite loop when Usage Fault exception occurs */
+    while (1)
+    {
+    }
+}
+
+/**
+* @brief  This function handles SVCall exception.
+* @param  None
+* @retval None
+*/
+void SVC_Handler(void)
+{
+}
+
+/**
+* @brief  This function handles Debug Monitor exception.
+* @param  None
+* @retval None
+*/
+void DebugMon_Handler(void)
+{
+}
+
+void PendSV_Handler(void)
+{
+}
+
+void SysTick_Handler(void)
+{
+    HAL_IncTick();
+}
