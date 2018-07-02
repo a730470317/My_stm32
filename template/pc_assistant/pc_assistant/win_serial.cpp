@@ -13,6 +13,7 @@ Win_serial_port::Win_serial_port()
     dcbSerialParameters.ByteSize = 8;
     dcbSerialParameters.StopBits = ONESTOPBIT;
     dcbSerialParameters.Parity = ODDPARITY;
+    //dcbSerialParameters.Parity = NOPARITY;
     dcbSerialParameters.fDtrControl = DTR_CONTROL_DISABLE;
 }
 
@@ -183,15 +184,51 @@ int Win_serial_port::readSerialPort(char *buffer, unsigned int buf_size)
     return 0;
 }
 
+
+BOOL Win_serial_port::writeCommByte(unsigned char ucByte)
+{
+    BOOL bWriteStat;
+    DWORD dwBytesWritten;
+
+    bWriteStat = WriteFile(m_comm, (LPSTR)&ucByte, 1, &dwBytesWritten, &m_OverlappedWrite);
+    if (!bWriteStat && (GetLastError() == ERROR_IO_PENDING)){
+        if (WaitForSingleObject(m_OverlappedWrite.hEvent, 1000)) dwBytesWritten = 0;
+        else{
+            GetOverlappedResult(m_comm, &m_OverlappedWrite, &dwBytesWritten, FALSE);
+            m_OverlappedWrite.Offset += dwBytesWritten;
+        }
+    }
+
+    return(TRUE);
+
+}
+
 bool Win_serial_port::writeSerialPort(char *buffer, unsigned int buf_size)
 {
+    std::unique_lock<mutex> lock(m_mutex_send);
+#if 0
+    if (!m_is_connected || m_comm == NULL) 
+        return(0);
+
+    DWORD dwBytesWritten = 0;
+    int i;
+    for (i = 0; i < buf_size; i++)
+    {
+        writeCommByte(buffer[i]);
+        dwBytesWritten++;
+    }
+
+    return((int)dwBytesWritten);
+#else
     DWORD bytesSend;
 
-    if (!WriteFile(this->m_comm, (void*)buffer, buf_size, &bytesSend, 0)){
+    if (!WriteFile(this->m_comm, (void*)buffer, buf_size, &bytesSend, 0))
+    {
         ClearCommError(this->m_comm, &this->m_errors, &this->m_status);
         return false;
     }
     else return true;
+#endif
 }
 
 bool Win_serial_port::isConnected()

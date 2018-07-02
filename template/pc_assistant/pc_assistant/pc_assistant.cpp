@@ -73,7 +73,7 @@ void pc_assistant::on_serial_callback(Serial_packet packet)
     {
     case STM32_MCU_STATE_REPORT:
         memcpy((void *)&m_mcu_state, packet.data, sizeof(MCU_STATE));
-        cout << "Adc =  " << m_mcu_state.m_adc_encoder_val << " , pos = " << m_mcu_state.m_motor_pos << endl;
+        //cout << "Adc =  " << m_mcu_state.m_adc_encoder_val << " , pos = " << m_mcu_state.m_motor_pos << endl;
         if(ui_busy==0)
             emit signal_on_refresh_mcu_state(&m_mcu_state);
         break;
@@ -83,16 +83,10 @@ void pc_assistant::on_serial_callback(Serial_packet packet)
         break;
     }
     CONSOLE_RESET_DEFAULT;
-    packet.id = 255 - packet.id;
+    //packet.id = 255 - packet.id;
     ////send_packet(packet);
-    emit signal_on_send_serial_packet(&packet);
+    //emit signal_on_send_serial_packet(&packet);
 
-    //char data[5];
-    //for (int i = 0; i < 5; i++)
-    //{
-    //    data[i] = i;
-    //}
-    //m_win_serial->writeSerialPort(data, 5);
 };
 
 void pc_assistant::slot_on_send_serial_packet(Serial_packet *packet)

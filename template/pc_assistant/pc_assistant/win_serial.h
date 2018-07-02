@@ -22,6 +22,8 @@ public:
     DWORD m_errors;
     Serial_config *m_serial_config;
     DCB dcbSerialParameters ;
+    OVERLAPPED m_OverlappedRead, m_OverlappedWrite;
+    std::mutex m_mutex_send;
 public:
     Win_serial_port();
     Win_serial_port(char *portName);
@@ -30,6 +32,7 @@ public:
     void init(const char *portName);
     void clear_buffer();
     int  readSerialPort(char *buffer, unsigned int buf_size);
+    BOOL writeCommByte(unsigned char ucByte);
     bool writeSerialPort(char *buffer, unsigned int buf_size);
     bool isConnected();
 #else

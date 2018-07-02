@@ -2,7 +2,6 @@
 
 #include "stm32h7xx_hal.h"
 
-#define _Error_Handler(file,line) printf("%s, %d", __FILE__, __LINE__);
 
 ADC_HandleTypeDef             AdcHandle;
 ADC_ChannelConfTypeDef        sConfig;
@@ -34,7 +33,9 @@ void exit_encoder_init()
     HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 }
 
-void Error_Handler(void)
+
+
+static void Error_Handler(void)
 {
   /* Turn LED3 on */
   //BSP_LED_On(LED3);

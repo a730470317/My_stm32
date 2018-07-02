@@ -15,13 +15,14 @@
   */
 
 //#define TEST_REC
-extern char g_usart1_tx_buffer[1024];
-extern char g_usart1_rx_buffer[1024];
+extern char g_usart1_tx_buffer[USART_RX_SIZE];
+extern char g_usart1_rx_buffer[USART_RX_SIZE];
 extern int g_usart1_rx_size;
 extern TIM_HandleTypeDef htim8;
 extern PID_controller pid_motor_0;
 extern PID_controller pid_motor_1;
 extern ADC_HandleTypeDef             AdcHandle;
+Motor_control serial_motor_ctrl;
 
 int g_usart1_rx_head_bias = 0;
 
@@ -46,12 +47,99 @@ extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim15;
 extern UART_HandleTypeDef huart1;
 
+/**
+  * @brief   This function handles NMI exception.
+  * @param  None
+  * @retval None
+  */
+void NMI_Handler(void)
+{
+}
+
+/**
+  * @brief  This function handles Hard Fault exception.
+  * @param  None
+  * @retval None
+  */
+void HardFault_Handler(void)
+{
+    /* Go to infinite loop when Hard Fault exception occurs */
+    while (1)
+    {
+    }
+}
+
+/**
+  * @brief  This function handles Memory Manage exception.
+  * @param  None
+  * @retval None
+  */
+void MemManage_Handler(void)
+{
+    /* Go to infinite loop when Memory Manage exception occurs */
+    while (1)
+    {
+    }
+}
+
+/**
+  * @brief  This function handles Bus Fault exception.
+  * @param  None
+  * @retval None
+  */
+void BusFault_Handler(void)
+{
+    /* Go to infinite loop when Bus Fault exception occurs */
+    while (1)
+    {
+    }
+}
+
+/**
+  * @brief  This function handles Usage Fault exception.
+  * @param  None
+  * @retval None
+  */
+void UsageFault_Handler(void)
+{
+    /* Go to infinite loop when Usage Fault exception occurs */
+    while (1)
+    {
+    }
+}
+
+/**
+  * @brief  This function handles SVCall exception.
+  * @param  None
+  * @retval None
+  */
+void SVC_Handler(void)
+{
+}
+
+/**
+  * @brief  This function handles Debug Monitor exception.
+  * @param  None
+  * @retval None
+  */
+void DebugMon_Handler(void)
+{
+}
+
+void PendSV_Handler(void)
+{
+}
+
 void SysTick_Handler(void)
 {
     HAL_IncTick();
 
 }
 
+
+/**
+* @brief This function handles TIM2 global interrupt.
+*/
 void TIM2_IRQHandler(void)
 {
     /* USER CODE BEGIN TIM2_IRQn 0 */
@@ -102,6 +190,9 @@ void TIM2_IRQHandler(void)
     /* USER CODE END TIM2_IRQn 1 */
 }
 
+/**
+* @brief This function handles USART1 global interrupt.
+*/
 void USART1_IRQHandler(void)
 {
     /* USER CODE BEGIN USART1_IRQn 0 */
@@ -139,12 +230,8 @@ void USART1_IRQHandler(void)
     /* USER CODE END USART1_IRQn 1 */
 }
 
-void TIM7_IRQHandler(void)
+void refresh_pendulum_state()
 {
-    /* USER CODE BEGIN TIM7_IRQn 0 */
-    GREEN_LED_ON
-    HAL_TIM_IRQHandler(&htim7);
-    
     /*Pendulum state update*/
     g_adc_1_val = g_adc_val_raw[0] * 3.3f / 0xffff;
     int bias_sample_time = 2000;
@@ -163,6 +250,18 @@ void TIM7_IRQHandler(void)
     g_pendulum_angle = g_adc_1_val*360.0 / 3.3;
     g_pendulum_angle -= (g_adc_bias*360.0 / 3.3);
     /*Pendulum state update*/
+}
+
+/**
+* @brief This function handles TIM7 global interrupt.
+*/
+void TIM7_IRQHandler(void)
+{
+    /* USER CODE BEGIN TIM7_IRQn 0 */
+    GREEN_LED_ON
+    HAL_TIM_IRQHandler(&htim7);
+    refresh_pendulum_state();
+    
     
     sprintf(g_printf_char[0], "a=%.2fV , e=%d", g_adc_1_val, (int)g_pendulum_angle);
     //refresh_bai_IO(angle);
@@ -210,11 +309,11 @@ void on_get_packet(char* packet_data, int packet_id, int packet_size)
     else if (packet_id == STM32_MCU_SET_PWM)
     {
         //printf("set pwm ", packet_data[0]);
-        Motor_control motor_ctrl;
-        memcpy(&motor_ctrl, packet_data, sizeof(Motor_control));
-        if (motor_ctrl.if_manaul)
+        memcpy(&serial_motor_ctrl, packet_data, sizeof(Motor_control));
+        if (serial_motor_ctrl.if_manaul)
         {
-            printf("Set pwm = %\r\n", motor_ctrl.pwm_val[0]);
+            printf("Set pwm = %\r\n", serial_motor_ctrl.pwm_val[0]);
+            sprintf(g_printf_char[2],"pwm = %d", serial_motor_ctrl.pwm_val[0]);
         }
     }
 }
@@ -234,6 +333,7 @@ void refresh_motor_IO(PID_controller * pid)
     {
         pid->m_output = 0;
     }
+    
     if (pid->m_output > 0)
     {
         pid->m_pwm_output_timer->CCR1 = abs(pid->m_output);
@@ -262,3 +362,5 @@ void refresh_bai_IO(float bai)
     sprintf(g_printf_char[2], "%.2f,", x_abs);
     pid_motor_0.m_target_pos = (motor_pos - x_abs);
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

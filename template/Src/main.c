@@ -1,4 +1,41 @@
+/**
+  ******************************************************************************
+  * @file    Templates/Src/main.c
+  * @author  MCD Application Team
+  * @version V1.2.0
+  * @date    29-December-2017
+  * @brief   Main program body
+  ******************************************************************************
+  * @attention
+  *
+  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
+  *
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  *
+  ******************************************************************************
+  */
 
+/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
 #include "board_io.h"
@@ -35,12 +72,23 @@ extern TIM_HandleTypeDef htim15;
 
 void pid_ctrl_init();
 
-void MX_GPIO_Init(void);
+static void MX_GPIO_Init(void);
 void MX_USART1_UART_Init(void);
-void MX_ADC1_Init(void);
+static void MX_ADC1_Init(void);
 
-void SystemClock_Config(void);
+static void SystemClock_Config(void);
+static void Error_Handler(void);
+void  _Error_Handler(char *file, int line);
 void CPU_CACHE_Enable(void);
+
+void refresh_lcd()
+{
+    u8 t;
+    for (int i = 0; i < 4; i++)
+    {
+        OLED_ShowString(0, 2 * i, g_printf_char[i]);
+    }
+}
 
 int main(void)
 {
@@ -79,17 +127,9 @@ int main(void)
     {
         TIM15->CCR1 = 50;
         TIM15->CCR2 = 0;
-        sprintf(g_printf_char[2], "pos= %.2f", g_encoder_exti*360.0 / 10000);
         OLED_Clear();
-        u8 t;
-        //long t_start = HAL_GetTick();
-
-        //OLED_Clear();
-        for (int i = 0; i < 4; i++)
-        {
-            OLED_ShowString(0, 2 * i, g_printf_char[i]);
-        }
-        HAL_Delay(20);
+        refresh_lcd();
+        HAL_Delay(33);
         //continue;
     }
 }
@@ -169,7 +209,7 @@ static void SystemClock_Config(void)
     ret = HAL_RCC_OscConfig(&RCC_OscInitStruct);
     if (ret != HAL_OK)
     {
-        //Error_Handler();
+        Error_Handler();
     }
 
     /* Select PLL as system clock source and configure  bus clocks dividers */
@@ -186,10 +226,16 @@ static void SystemClock_Config(void)
     ret = HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4);
     if (ret != HAL_OK)
     {
-        //Error_Handler();
+        Error_Handler();
     }
 }
 
+static void Error_Handler(void)
+{
+    while (1)
+    {
+    }
+}
 
 static void CPU_CACHE_Enable(void)
 {
@@ -200,6 +246,7 @@ static void CPU_CACHE_Enable(void)
     */
     /* Enable I-Cache */
     SCB_EnableICache();
+
     /* Enable D-Cache */
     SCB_EnableDCache();
 }
@@ -287,7 +334,14 @@ void MX_USART1_UART_Init(void)
     huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
     if (HAL_UART_Init(&huart1) != HAL_OK)
     {
-        //_Error_Handler(__FILE__, __LINE__);
+        _Error_Handler(__FILE__, __LINE__);
     }
 
+}
+
+void _Error_Handler(char *file, int line)
+{
+    while (1)
+    {
+    }
 }
