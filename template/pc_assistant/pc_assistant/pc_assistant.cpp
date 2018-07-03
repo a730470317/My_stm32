@@ -34,7 +34,8 @@ void pc_assistant::init_signal_and_slot()
     connect(&m_serial_rec_timer, SIGNAL(timeout()), this, SLOT(slot_on_serial_timeout()));
     connect(&m_packet_rec_timer, SIGNAL(timeout()), this, SLOT(slot_on_packet_timeout()));
 
-    connect(ui.slider_pwm, SIGNAL(sliderMoved(int)), this, SLOT(slot_on_slider_pwm_changed()));
+    //connect(ui.slider_pwm, SIGNAL(sliderMoved(int)), this, SLOT(slot_on_slider_pwm_changed()));
+    connect(ui.slider_pwm, SIGNAL(valueChanged(int)), this, SLOT(slot_on_slider_pwm_changed()));
 
 }
 

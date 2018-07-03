@@ -12,7 +12,7 @@ Win_serial_port::Win_serial_port()
     dcbSerialParameters.BaudRate = 2000000;
     dcbSerialParameters.ByteSize = 8;
     dcbSerialParameters.StopBits = ONESTOPBIT;
-    dcbSerialParameters.Parity = NOPARITY;
+    dcbSerialParameters.Parity = ODDPARITY;
     //dcbSerialParameters.Parity = NOPARITY;
     dcbSerialParameters.fDtrControl = DTR_CONTROL_DISABLE;
 }
