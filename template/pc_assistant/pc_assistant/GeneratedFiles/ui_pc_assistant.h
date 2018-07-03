@@ -199,7 +199,8 @@ public:
         sizePolicy4.setVerticalStretch(0);
         sizePolicy4.setHeightForWidth(slider_pwm->sizePolicy().hasHeightForWidth());
         slider_pwm->setSizePolicy(sizePolicy4);
-        slider_pwm->setMinimum(-99);
+        slider_pwm->setMinimum(-999);
+        slider_pwm->setMaximum(999);
         slider_pwm->setOrientation(Qt::Horizontal);
 
         verticalLayout_2->addWidget(slider_pwm);

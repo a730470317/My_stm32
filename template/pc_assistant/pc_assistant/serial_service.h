@@ -41,7 +41,7 @@ class Win_serial_port;
 #define SERIAL_SERVICE_VERSION              "Serial_service_v0.1"
 #define SERIAL_SERVICE_DESC                 "The beta version."
 #define MAX_SEND_BUFFER 10000
-#define MAX_REC_BUFFER 10000
+#define MAX_REC_BUFFER  10000
 
 using namespace std;
 //using namespace Qt;

@@ -125,8 +125,6 @@ int main(void)
     /* Infinite loop */
     while (1)
     {
-        TIM15->CCR1 = 50;
-        TIM15->CCR2 = 0;
         OLED_Clear();
         refresh_lcd();
         HAL_Delay(33);
